@@ -1,5 +1,6 @@
 node_modules/
 server/db/*.db
+server/local.db
 server/.env
 client/.env
 .DS_Store
