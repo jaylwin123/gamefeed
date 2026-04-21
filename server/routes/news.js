@@ -1,210 +1,224 @@
-const express = require("express");
+﻿const express = require("express");
 const router = express.Router();
-const db = require("../db/database");
+const { db } = require("../db/database");
 const {
   authenticate,
   authenticateRoutine,
 } = require("../middleware/authMiddleware");
 
-// Seed newsletter de ejemplo si la BD está vacía
-function seedDefaultNewsletter() {
-  const existing = db.prepare("SELECT id FROM newsletters LIMIT 1").get();
-  if (existing) return;
-
-  const defaultContent = {
-    news: [
-      {
-        category: "LANZAMIENTO",
-        title: "Elden Ring: Shadow of the Erdtree llega el 21 de junio",
-        description:
-          "La expansión más esperada del año promete doblar el contenido base con una nueva región y jefes inéditos.",
-        platform: "PC / PS5 / Xbox",
-      },
-      {
-        category: "EXPANSIÓN",
-        title: "Cyberpunk 2077: Phantom Liberty supera 8 millones de copias",
-        description:
-          "CD Projekt RED anuncia que el DLC se convirtió en el más vendido de su historia.",
-        platform: "PC / Consolas",
-      },
-      {
-        category: "INDUSTRIA",
-        title: "Microsoft confirma Xbox Showcase para mayo 2025",
-        description:
-          "El evento revelará los próximos títulos de Game Pass y posibles anuncios de hardware.",
-        platform: "Xbox / PC",
-      },
-      {
-        category: "ACTUALIZACIÓN",
-        title: "Baldur's Gate 3 recibe el Parche 7 con nuevo final",
-        description:
-          "Larian Studios sorprende con contenido gratuito que añade más de 10 horas de juego extra.",
-        platform: "PC / PS5",
-      },
-    ],
-    deals: [
-      {
-        store: "Steam",
-        game: "Cyberpunk 2077",
-        originalPrice: "$59.99",
-        discountPrice: "$17.99",
-        discount: "70%",
-      },
-      {
-        store: "Epic",
-        game: "Satisfactory",
-        originalPrice: "$29.99",
-        discountPrice: "$14.99",
-        discount: "50%",
-      },
-      {
-        store: "PS Store",
-        game: "God of War: Ragnarök",
-        originalPrice: "$69.99",
-        discountPrice: "$34.99",
-        discount: "50%",
-      },
-    ],
-    pick: {
-      title: "Hades II",
-      platforms: ["PC", "Early Access"],
+const DEFAULT_CONTENT = {
+  news: [
+    {
+      category: "LANZAMIENTO",
+      title: "Elden Ring: Shadow of the Erdtree llega el 21 de junio",
       description:
-        "Supergiant Games regresa con una secuela que supera en todo a su predecesor. Combate más fluido, narrativa más profunda y una roguelite que no podrás soltar.",
-      score: 9,
-      pros: [
-        "Combate adictivo y fluido",
-        "Arte visual espectacular",
-        "Historia envolvente",
-      ],
-      cons: ["Aún en Early Access", "Curva de dificultad alta"],
+        "La expansion mas esperada del ano promete doblar el contenido base con una nueva region y jefes ineditos.",
+      platform: "PC / PS5 / Xbox",
     },
-    poll: {
-      question: "¿Cuál es el género que más estás jugando este año?",
-      options: [
-        "RPG / JRPG",
-        "FPS / Acción",
-        "Roguelite / Indie",
-        "Multijugador / Battle Royale",
-      ],
-      votes: [0, 0, 0, 0],
+    {
+      category: "EXPANSION",
+      title: "Cyberpunk 2077: Phantom Liberty supera 8 millones de copias",
+      description:
+        "CD Projekt RED anuncia que el DLC se convirtio en el mas vendido de su historia.",
+      platform: "PC / Consolas",
     },
-  };
+    {
+      category: "INDUSTRIA",
+      title: "Microsoft confirma Xbox Showcase para mayo 2025",
+      description:
+        "El evento revelara los proximos titulos de Game Pass y posibles anuncios de hardware.",
+      platform: "Xbox / PC",
+    },
+    {
+      category: "ACTUALIZACION",
+      title: "Baldur Gate 3 recibe el Parche 7 con nuevo final",
+      description:
+        "Larian Studios sorprende con contenido gratuito que anade mas de 10 horas de juego extra.",
+      platform: "PC / PS5",
+    },
+  ],
+  deals: [
+    {
+      store: "Steam",
+      game: "Cyberpunk 2077",
+      originalPrice: "$59.99",
+      discountPrice: "$17.99",
+      discount: "70%",
+    },
+    {
+      store: "Epic",
+      game: "Satisfactory",
+      originalPrice: "$29.99",
+      discountPrice: "$14.99",
+      discount: "50%",
+    },
+    {
+      store: "PS Store",
+      game: "God of War Ragnarok",
+      originalPrice: "$69.99",
+      discountPrice: "$34.99",
+      discount: "50%",
+    },
+  ],
+  pick: {
+    title: "Hades II",
+    platforms: ["PC", "Early Access"],
+    description:
+      "Supergiant Games regresa con una secuela que supera en todo a su predecesor. Combate mas fluido, narrativa mas profunda y una roguelite que no podras soltar.",
+    score: 9,
+    pros: [
+      "Combate adictivo y fluido",
+      "Arte visual espectacular",
+      "Historia envolvente",
+    ],
+    cons: ["Aun en Early Access", "Curva de dificultad alta"],
+  },
+  poll: {
+    question: "Cual es el genero que mas estas jugando este ano?",
+    options: [
+      "RPG / JRPG",
+      "FPS / Accion",
+      "Roguelite / Indie",
+      "Multijugador / Battle Royale",
+    ],
+    votes: [0, 0, 0, 0],
+  },
+};
 
-  db.prepare(
-    "INSERT INTO newsletters (edition, date, content) VALUES (?, ?, ?)",
-  ).run(
-    1,
-    new Date().toISOString().split("T")[0],
-    JSON.stringify(defaultContent),
-  );
+async function seedDefaultNewsletter() {
+  const result = await db.execute("SELECT id FROM newsletters LIMIT 1");
+  if (result.rows.length > 0) return;
+  await db.execute({
+    sql: "INSERT INTO newsletters (edition, date, content) VALUES (?, ?, ?)",
+    args: [
+      1,
+      new Date().toISOString().split("T")[0],
+      JSON.stringify(DEFAULT_CONTENT),
+    ],
+  });
 }
 
-seedDefaultNewsletter();
-
 // GET /api/news/latest
-router.get("/latest", authenticate, (req, res) => {
-  const newsletter = db
-    .prepare("SELECT * FROM newsletters ORDER BY edition DESC LIMIT 1")
-    .get();
-  if (!newsletter) {
-    return res.status(404).json({ error: "No hay newsletter disponible" });
+router.get("/latest", authenticate, async (req, res) => {
+  try {
+    const result = await db.execute(
+      "SELECT * FROM newsletters ORDER BY edition DESC LIMIT 1",
+    );
+    const newsletter = result.rows[0];
+    if (!newsletter)
+      return res.status(404).json({ error: "No hay newsletter disponible" });
+    return res.json({
+      ...newsletter,
+      id: Number(newsletter.id),
+      edition: Number(newsletter.edition),
+      content: JSON.parse(newsletter.content),
+    });
+  } catch {
+    return res.status(500).json({ error: "Error interno del servidor" });
   }
-  return res.json({ ...newsletter, content: JSON.parse(newsletter.content) });
 });
 
-// GET /api/news/schema — Routines pueden consultar el formato esperado sin auth
+// GET /api/news/schema
 router.get("/schema", (req, res) => {
   return res.json({
     endpoint: "POST /api/news/publish",
     auth: "Bearer <ROUTINES_API_KEY>",
     body: {
-      edition: "number — número de edición (ej: 2)",
+      edition: "number",
       news: [
         {
-          category:
-            "string — LANZAMIENTO | EXPANSIÓN | INDUSTRIA | ACTUALIZACIÓN",
+          category: "LANZAMIENTO|EXPANSION|INDUSTRIA|ACTUALIZACION",
           title: "string",
           description: "string",
-          platform: "string — ej: PC / PS5 / Xbox",
+          platform: "string",
         },
       ],
       deals: [
         {
-          store: "string — Steam | Epic | PS Store",
+          store: "Steam|Epic|PS Store",
           game: "string",
-          originalPrice: "string — ej: $59.99",
-          discountPrice: "string — ej: $29.99",
-          discount: "string — ej: 50%",
+          originalPrice: "string",
+          discountPrice: "string",
+          discount: "string",
         },
       ],
       pick: {
         title: "string",
         platforms: ["string"],
         description: "string",
-        score: "number — 1 a 10",
+        score: "number 1-10",
         pros: ["string"],
         cons: ["string"],
       },
       poll: {
         question: "string",
-        options: ["string — máximo 4 opciones"],
-        votes: ["number — inicializar en 0 por cada opción"],
+        options: ["string max 4"],
+        votes: [0, 0, 0, 0],
       },
     },
   });
 });
 
-// POST /api/news/publish — accesible con JWT de usuario O API Key de Routines
-router.post("/publish", authenticateRoutine, (req, res) => {
+// POST /api/news/publish
+router.post("/publish", authenticateRoutine, async (req, res) => {
   const { edition, news, deals, pick, poll } = req.body;
   if (!edition || !news || !deals || !pick || !poll) {
     return res.status(400).json({ error: "Todos los campos son requeridos" });
   }
-  const content = JSON.stringify({ news, deals, pick, poll });
-  const date = new Date().toISOString().split("T")[0];
-  const result = db
-    .prepare(
-      "INSERT INTO newsletters (edition, date, content) VALUES (?, ?, ?)",
-    )
-    .run(edition, date, content);
-  return res
-    .status(201)
-    .json({ message: "Newsletter publicado", id: result.lastInsertRowid });
+  try {
+    const content = JSON.stringify({ news, deals, pick, poll });
+    const date = new Date().toISOString().split("T")[0];
+    const result = await db.execute({
+      sql: "INSERT INTO newsletters (edition, date, content) VALUES (?, ?, ?)",
+      args: [edition, date, content],
+    });
+    return res
+      .status(201)
+      .json({
+        message: "Newsletter publicado",
+        id: Number(result.lastInsertRowid),
+      });
+  } catch {
+    return res.status(500).json({ error: "Error interno del servidor" });
+  }
 });
 
 // POST /api/news/poll-vote
-router.post("/poll-vote", authenticate, (req, res) => {
+router.post("/poll-vote", authenticate, async (req, res) => {
   const { newsletterId, optionIndex } = req.body;
   const userId = req.user.id;
+  try {
+    const nlResult = await db.execute({
+      sql: "SELECT * FROM newsletters WHERE id = ?",
+      args: [newsletterId],
+    });
+    const newsletter = nlResult.rows[0];
+    if (!newsletter)
+      return res.status(404).json({ error: "Newsletter no encontrado" });
 
-  const newsletter = db
-    .prepare("SELECT * FROM newsletters WHERE id = ?")
-    .get(newsletterId);
-  if (!newsletter) {
-    return res.status(404).json({ error: "Newsletter no encontrado" });
+    const voteResult = await db.execute({
+      sql: "SELECT id FROM poll_votes WHERE user_id = ? AND newsletter_id = ?",
+      args: [userId, newsletterId],
+    });
+    if (voteResult.rows.length > 0)
+      return res.status(409).json({ error: "Ya has votado en esta encuesta" });
+
+    await db.execute({
+      sql: "INSERT INTO poll_votes (user_id, newsletter_id, option_index) VALUES (?, ?, ?)",
+      args: [userId, newsletterId, optionIndex],
+    });
+
+    const content = JSON.parse(newsletter.content);
+    const votes = new Array(content.poll.options.length).fill(0);
+    const allVotes = await db.execute({
+      sql: "SELECT option_index FROM poll_votes WHERE newsletter_id = ?",
+      args: [newsletterId],
+    });
+    allVotes.rows.forEach((v) => votes[Number(v.option_index)]++);
+    return res.json({ votes });
+  } catch {
+    return res.status(500).json({ error: "Error interno del servidor" });
   }
-
-  const existingVote = db
-    .prepare(
-      "SELECT id FROM poll_votes WHERE user_id = ? AND newsletter_id = ?",
-    )
-    .get(userId, newsletterId);
-  if (existingVote) {
-    return res.status(409).json({ error: "Ya has votado en esta encuesta" });
-  }
-
-  db.prepare(
-    "INSERT INTO poll_votes (user_id, newsletter_id, option_index) VALUES (?, ?, ?)",
-  ).run(userId, newsletterId, optionIndex);
-
-  const content = JSON.parse(newsletter.content);
-  const votes = new Array(content.poll.options.length).fill(0);
-  const allVotes = db
-    .prepare("SELECT option_index FROM poll_votes WHERE newsletter_id = ?")
-    .all(newsletterId);
-  allVotes.forEach((v) => votes[v.option_index]++);
-
-  return res.json({ votes });
 });
 
-module.exports = router;
+module.exports = { router, seedDefaultNewsletter };

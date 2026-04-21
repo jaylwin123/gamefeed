@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const db = require("../db/database");
+const { db } = require("../db/database");
 
 const JWT_SECRET = process.env.JWT_SECRET || "gamefeed_super_secret_key_2024";
 const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$/;
@@ -23,9 +23,10 @@ router.post("/register", async (req, res) => {
 
   try {
     const passwordHash = await bcrypt.hash(password, 12);
-    db.prepare(
-      "INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)",
-    ).run(username, email, passwordHash);
+    await db.execute({
+      sql: "INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)",
+      args: [username, email, passwordHash],
+    });
     return res.status(201).json({ message: "Usuario creado exitosamente" });
   } catch (err) {
     if (err.message && err.message.includes("UNIQUE")) {
@@ -46,7 +47,11 @@ router.post("/login", async (req, res) => {
   }
 
   try {
-    const user = db.prepare("SELECT * FROM users WHERE email = ?").get(email);
+    const result = await db.execute({
+      sql: "SELECT * FROM users WHERE email = ?",
+      args: [email],
+    });
+    const user = result.rows[0];
     if (!user) {
       return res.status(401).json({ error: "Credenciales incorrectas" });
     }
@@ -57,14 +62,14 @@ router.post("/login", async (req, res) => {
     }
 
     const token = jwt.sign(
-      { id: user.id, username: user.username, email: user.email },
+      { id: Number(user.id), username: user.username, email: user.email },
       JWT_SECRET,
       { expiresIn: "7d" },
     );
 
     return res.json({
       token,
-      user: { id: user.id, username: user.username, email: user.email },
+      user: { id: Number(user.id), username: user.username, email: user.email },
     });
   } catch {
     return res.status(500).json({ error: "Error interno del servidor" });

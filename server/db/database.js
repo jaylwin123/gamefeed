@@ -1,35 +1,37 @@
-const Database = require("better-sqlite3");
-const path = require("path");
+const { createClient } = require("@libsql/client");
 
-const db = new Database(path.join(__dirname, "gamefeed.db"));
+const db = createClient({
+  url: process.env.TURSO_DB_URL || "file:local.db",
+  authToken: process.env.TURSO_AUTH_TOKEN,
+});
 
-db.exec(`
-  CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT NOT NULL UNIQUE,
-    email TEXT NOT NULL UNIQUE,
-    password_hash TEXT NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-  );
+async function initDB() {
+  await db.executeMultiple(`
+    CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      username TEXT NOT NULL UNIQUE,
+      email TEXT NOT NULL UNIQUE,
+      password_hash TEXT NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
 
-  CREATE TABLE IF NOT EXISTS newsletters (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    edition INTEGER NOT NULL,
-    date TEXT NOT NULL,
-    content TEXT NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-  );
+    CREATE TABLE IF NOT EXISTS newsletters (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      edition INTEGER NOT NULL,
+      date TEXT NOT NULL,
+      content TEXT NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
 
-  CREATE TABLE IF NOT EXISTS poll_votes (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER NOT NULL,
-    newsletter_id INTEGER NOT NULL,
-    option_index INTEGER NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (newsletter_id) REFERENCES newsletters(id),
-    UNIQUE(user_id, newsletter_id)
-  );
-`);
+    CREATE TABLE IF NOT EXISTS poll_votes (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      newsletter_id INTEGER NOT NULL,
+      option_index INTEGER NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE(user_id, newsletter_id)
+    );
+  `);
+}
 
-module.exports = db;
+module.exports = { db, initDB };
