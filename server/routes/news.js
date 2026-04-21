@@ -11,30 +11,30 @@ const DEFAULT_CONTENT = {
     {
       category: "LANZAMIENTO",
       title: "Elden Ring: Shadow of the Erdtree llega el 21 de junio",
-      description:
-        "La expansion mas esperada del ano promete doblar el contenido base con una nueva region y jefes ineditos.",
+      description: "La expansion mas esperada del ano promete doblar el contenido base con una nueva region y jefes ineditos.",
       platform: "PC / PS5 / Xbox",
+      image: "https://media.rawg.io/media/games/b29/b294bfc5688cb07c41c0b5524fe2082b.jpg",
     },
     {
       category: "EXPANSION",
       title: "Cyberpunk 2077: Phantom Liberty supera 8 millones de copias",
-      description:
-        "CD Projekt RED anuncia que el DLC se convirtio en el mas vendido de su historia.",
+      description: "CD Projekt RED anuncia que el DLC se convirtio en el mas vendido de su historia.",
       platform: "PC / Consolas",
+      image: "https://media.rawg.io/media/games/26d/26d4437715bee60138dab4a7c8bb94a3.jpg",
     },
     {
       category: "INDUSTRIA",
       title: "Microsoft confirma Xbox Showcase para mayo 2025",
-      description:
-        "El evento revelara los proximos titulos de Game Pass y posibles anuncios de hardware.",
+      description: "El evento revelara los proximos titulos de Game Pass y posibles anuncios de hardware.",
       platform: "Xbox / PC",
+      image: "https://media.rawg.io/media/games/f87/f87457e8347484033cb34cde6101d08d.jpg",
     },
     {
       category: "ACTUALIZACION",
       title: "Baldur Gate 3 recibe el Parche 7 con nuevo final",
-      description:
-        "Larian Studios sorprende con contenido gratuito que anade mas de 10 horas de juego extra.",
+      description: "Larian Studios sorprende con contenido gratuito que anade mas de 10 horas de juego extra.",
       platform: "PC / PS5",
+      image: "https://media.rawg.io/media/games/4be/4be6a6ad0364751a96229c56bf69be85.jpg",
     },
   ],
   deals: [
@@ -131,6 +131,7 @@ router.get("/schema", (req, res) => {
           title: "string",
           description: "string",
           platform: "string",
+          image: "string — URL directa de imagen del juego (opcional, usar CDN publico: RAWG, Steam CDN, imagen oficial)",
         },
       ],
       deals: [
