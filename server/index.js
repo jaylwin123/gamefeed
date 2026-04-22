@@ -5,6 +5,7 @@ require("dotenv").config();
 const { initDB } = require("./db/database");
 const authRoutes = require("./routes/auth");
 const { router: newsRoutes, seedDefaultNewsletter } = require("./routes/news");
+const gamesRoutes = require("./routes/games");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -29,6 +30,7 @@ app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/news", newsRoutes);
+app.use("/api/games", gamesRoutes);
 
 initDB()
   .then(async () => {

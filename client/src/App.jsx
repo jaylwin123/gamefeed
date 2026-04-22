@@ -5,6 +5,7 @@ import Dashboard from "./pages/Dashboard";
 import History from "./pages/History";
 import EditionView from "./pages/EditionView";
 import NewsArticle from "./pages/NewsArticle";
+import GamePage from "./pages/GamePage";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 export default function App() {
@@ -42,6 +43,14 @@ export default function App() {
         element={
           <ProtectedRoute>
             <NewsArticle />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/game/:slug"
+        element={
+          <ProtectedRoute>
+            <GamePage />
           </ProtectedRoute>
         }
       />

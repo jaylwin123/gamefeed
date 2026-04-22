@@ -42,6 +42,24 @@ async function initDB() {
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       UNIQUE(user_id, newsletter_id, news_index)
     );
+
+    CREATE TABLE IF NOT EXISTS games (
+      slug TEXT PRIMARY KEY,
+      title TEXT NOT NULL,
+      image TEXT,
+      platform TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS game_reviews (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      slug TEXT NOT NULL,
+      user_id INTEGER NOT NULL,
+      rating INTEGER NOT NULL CHECK(rating BETWEEN 1 AND 10),
+      body TEXT NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE(slug, user_id)
+    );
   `);
 }
 
