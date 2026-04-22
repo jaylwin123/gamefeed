@@ -1,9 +1,12 @@
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useTheme } from "../context/ThemeContext";
 
 export default function Navbar({ edition }) {
   const { user, logout } = useAuth();
+  const { dark, toggleDark } = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
 
   function handleLogout() {
     logout();
@@ -13,16 +16,34 @@ export default function Navbar({ edition }) {
   return (
     <nav className="sticky top-0 z-50 bg-bg-primary border-b border-border-dark px-6 py-3 flex items-center justify-between backdrop-blur-sm">
       <div className="flex items-center gap-4">
-        <span className="text-2xl font-black tracking-widest bg-gradient-to-r from-accent-purple to-accent-cyan bg-clip-text text-transparent">
+        <button
+          onClick={() => navigate("/dashboard")}
+          className="text-2xl font-black tracking-widest bg-gradient-to-r from-accent-purple to-accent-cyan bg-clip-text text-transparent hover:opacity-80 transition-opacity"
+        >
           GAMEFEED
-        </span>
+        </button>
         {edition && (
           <span className="text-xs text-text-muted border border-border-dark rounded px-2 py-1 font-mono">
             Edición #{edition}
           </span>
         )}
       </div>
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
+        {location.pathname !== "/history" && (
+          <button
+            onClick={() => navigate("/history")}
+            className="text-xs text-text-muted hover:text-accent-cyan transition-colors hidden sm:block"
+          >
+            Archivo
+          </button>
+        )}
+        <button
+          onClick={toggleDark}
+          className="text-lg hover:scale-110 transition-transform"
+          title={dark ? "Modo claro" : "Modo oscuro"}
+        >
+          {dark ? "☀️" : "🌙"}
+        </button>
         {user && (
           <span className="text-sm text-text-secondary hidden sm:block">
             Hola,{" "}

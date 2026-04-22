@@ -106,6 +106,45 @@ async function seedDefaultNewsletter() {
   });
 }
 
+// GET /api/news/history
+router.get("/history", authenticate, async (req, res) => {
+  try {
+    const result = await db.execute(
+      "SELECT id, edition, date FROM newsletters ORDER BY edition DESC",
+    );
+    return res.json(
+      result.rows.map((r) => ({
+        id: Number(r.id),
+        edition: Number(r.edition),
+        date: r.date,
+      })),
+    );
+  } catch {
+    return res.status(500).json({ error: "Error interno del servidor" });
+  }
+});
+
+// GET /api/news/:id
+router.get("/:id", authenticate, async (req, res) => {
+  try {
+    const result = await db.execute({
+      sql: "SELECT * FROM newsletters WHERE id = ?",
+      args: [req.params.id],
+    });
+    const newsletter = result.rows[0];
+    if (!newsletter)
+      return res.status(404).json({ error: "Newsletter no encontrado" });
+    return res.json({
+      ...newsletter,
+      id: Number(newsletter.id),
+      edition: Number(newsletter.edition),
+      content: JSON.parse(newsletter.content),
+    });
+  } catch {
+    return res.status(500).json({ error: "Error interno del servidor" });
+  }
+});
+
 // GET /api/news/latest
 router.get("/latest", authenticate, async (req, res) => {
   try {

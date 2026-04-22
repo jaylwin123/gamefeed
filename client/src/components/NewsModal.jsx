@@ -86,27 +86,47 @@ export default function NewsModal({ news, onClose }) {
             {fullDescription || description}
           </p>
 
-          {/* Fuente + link */}
+          {/* Fuente + share + link */}
           <div className="flex items-center justify-between pt-3 border-t border-border-dark flex-wrap gap-3">
             {source && (
               <span className="text-xs text-text-muted">
                 Fuente: <span className="text-text-secondary">{source}</span>
               </span>
             )}
-            {url ? (
-              <a
-                href={url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs font-bold text-accent-cyan border border-accent-cyan/40 rounded px-4 py-2 hover:bg-accent-cyan/10 transition-colors ml-auto"
+            <div className="flex items-center gap-2 ml-auto">
+              <button
+                onClick={() => {
+                  const text = `${title} — vía GAMEFEED`;
+                  if (navigator.share) {
+                    navigator.share({
+                      title,
+                      text,
+                      url: url || window.location.href,
+                    });
+                  } else {
+                    navigator.clipboard.writeText(url || window.location.href);
+                    alert("Link copiado al portapapeles");
+                  }
+                }}
+                className="text-xs text-text-muted border border-border-dark rounded px-3 py-2 hover:border-accent-purple hover:text-accent-purple transition-colors"
               >
-                Leer noticia completa →
-              </a>
-            ) : (
-              <span className="text-xs text-text-muted ml-auto italic">
-                Sin enlace disponible
-              </span>
-            )}
+                Compartir ↗
+              </button>
+              {url ? (
+                <a
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs font-bold text-accent-cyan border border-accent-cyan/40 rounded px-4 py-2 hover:bg-accent-cyan/10 transition-colors"
+                >
+                  Leer noticia completa →
+                </a>
+              ) : (
+                <span className="text-xs text-text-muted italic">
+                  Sin enlace disponible
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </div>
