@@ -124,16 +124,15 @@ router.get("/history", authenticate, async (req, res) => {
   }
 });
 
-// GET /api/news/:id
-router.get("/:id", authenticate, async (req, res) => {
+// GET /api/news/latest
+router.get("/latest", authenticate, async (req, res) => {
   try {
-    const result = await db.execute({
-      sql: "SELECT * FROM newsletters WHERE id = ?",
-      args: [req.params.id],
-    });
+    const result = await db.execute(
+      "SELECT * FROM newsletters ORDER BY edition DESC LIMIT 1",
+    );
     const newsletter = result.rows[0];
     if (!newsletter)
-      return res.status(404).json({ error: "Newsletter no encontrado" });
+      return res.status(404).json({ error: "No hay newsletter disponible" });
     return res.json({
       ...newsletter,
       id: Number(newsletter.id),
@@ -145,15 +144,16 @@ router.get("/:id", authenticate, async (req, res) => {
   }
 });
 
-// GET /api/news/latest
-router.get("/latest", authenticate, async (req, res) => {
+// GET /api/news/:id  — debe ir DESPUÉS de las rutas con nombres fijos
+router.get("/:id", authenticate, async (req, res) => {
   try {
-    const result = await db.execute(
-      "SELECT * FROM newsletters ORDER BY edition DESC LIMIT 1",
-    );
+    const result = await db.execute({
+      sql: "SELECT * FROM newsletters WHERE id = ?",
+      args: [req.params.id],
+    });
     const newsletter = result.rows[0];
     if (!newsletter)
-      return res.status(404).json({ error: "No hay newsletter disponible" });
+      return res.status(404).json({ error: "Newsletter no encontrado" });
     return res.json({
       ...newsletter,
       id: Number(newsletter.id),
