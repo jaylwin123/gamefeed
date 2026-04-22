@@ -11,30 +11,38 @@ const DEFAULT_CONTENT = {
     {
       category: "LANZAMIENTO",
       title: "Elden Ring: Shadow of the Erdtree llega el 21 de junio",
-      description: "La expansion mas esperada del ano promete doblar el contenido base con una nueva region y jefes ineditos.",
+      description:
+        "La expansion mas esperada del ano promete doblar el contenido base con una nueva region y jefes ineditos.",
       platform: "PC / PS5 / Xbox",
-      image: "https://media.rawg.io/media/games/b29/b294bfc5688cb07c41c0b5524fe2082b.jpg",
+      image:
+        "https://media.rawg.io/media/games/b29/b294bfc5688cb07c41c0b5524fe2082b.jpg",
     },
     {
       category: "EXPANSION",
       title: "Cyberpunk 2077: Phantom Liberty supera 8 millones de copias",
-      description: "CD Projekt RED anuncia que el DLC se convirtio en el mas vendido de su historia.",
+      description:
+        "CD Projekt RED anuncia que el DLC se convirtio en el mas vendido de su historia.",
       platform: "PC / Consolas",
-      image: "https://media.rawg.io/media/games/26d/26d4437715bee60138dab4a7c8bb94a3.jpg",
+      image:
+        "https://media.rawg.io/media/games/26d/26d4437715bee60138dab4a7c8bb94a3.jpg",
     },
     {
       category: "INDUSTRIA",
       title: "Microsoft confirma Xbox Showcase para mayo 2025",
-      description: "El evento revelara los proximos titulos de Game Pass y posibles anuncios de hardware.",
+      description:
+        "El evento revelara los proximos titulos de Game Pass y posibles anuncios de hardware.",
       platform: "Xbox / PC",
-      image: "https://media.rawg.io/media/games/f87/f87457e8347484033cb34cde6101d08d.jpg",
+      image:
+        "https://media.rawg.io/media/games/f87/f87457e8347484033cb34cde6101d08d.jpg",
     },
     {
       category: "ACTUALIZACION",
       title: "Baldur Gate 3 recibe el Parche 7 con nuevo final",
-      description: "Larian Studios sorprende con contenido gratuito que anade mas de 10 horas de juego extra.",
+      description:
+        "Larian Studios sorprende con contenido gratuito que anade mas de 10 horas de juego extra.",
       platform: "PC / PS5",
-      image: "https://media.rawg.io/media/games/4be/4be6a6ad0364751a96229c56bf69be85.jpg",
+      image:
+        "https://media.rawg.io/media/games/4be/4be6a6ad0364751a96229c56bf69be85.jpg",
     },
   ],
   deals: [
@@ -131,7 +139,13 @@ router.get("/schema", (req, res) => {
           title: "string",
           description: "string",
           platform: "string",
-          image: "string — URL directa de imagen del juego (opcional, usar CDN publico: RAWG, Steam CDN, imagen oficial)",
+          image:
+            "string — URL directa de imagen del juego (opcional, usar Steam CDN: https://cdn.akamai.steamstatic.com/steam/apps/{ID}/header.jpg)",
+          fullDescription:
+            "string — texto completo de la noticia, 3-5 oraciones con todos los detalles (opcional pero recomendado)",
+          url: "string — URL de la fuente original de la noticia (IGN, Eurogamer, web oficial, etc.)",
+          source:
+            "string — nombre de la fuente, ej: IGN, Eurogamer, PlayStation Blog",
         },
       ],
       deals: [
@@ -141,6 +155,7 @@ router.get("/schema", (req, res) => {
           originalPrice: "string",
           discountPrice: "string",
           discount: "string",
+          url: "string — URL directa a la pagina del juego en la tienda oficial",
         },
       ],
       pick: {
@@ -173,12 +188,10 @@ router.post("/publish", authenticateRoutine, async (req, res) => {
       sql: "INSERT INTO newsletters (edition, date, content) VALUES (?, ?, ?)",
       args: [edition, date, content],
     });
-    return res
-      .status(201)
-      .json({
-        message: "Newsletter publicado",
-        id: Number(result.lastInsertRowid),
-      });
+    return res.status(201).json({
+      message: "Newsletter publicado",
+      id: Number(result.lastInsertRowid),
+    });
   } catch {
     return res.status(500).json({ error: "Error interno del servidor" });
   }

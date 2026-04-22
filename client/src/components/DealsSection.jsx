@@ -5,11 +5,25 @@ const STORE_COLORS = {
   DEFAULT: "bg-accent-purple text-white",
 };
 
-function DealCard({ store, game, originalPrice, discountPrice, discount }) {
+function DealCard({
+  store,
+  game,
+  originalPrice,
+  discountPrice,
+  discount,
+  url,
+}) {
   const storeClass = STORE_COLORS[store] || STORE_COLORS.DEFAULT;
+  const Wrapper = url ? "a" : "div";
+  const wrapperProps = url
+    ? { href: url, target: "_blank", rel: "noopener noreferrer" }
+    : {};
 
   return (
-    <div className="bg-bg-card border border-border-dark rounded-xl p-4 flex items-center gap-4 hover:border-accent-cyan hover:shadow-[0_0_20px_rgba(6,182,212,0.2)] transition-all duration-300">
+    <Wrapper
+      {...wrapperProps}
+      className={`bg-bg-card border border-border-dark rounded-xl p-4 flex items-center gap-4 hover:border-accent-cyan hover:shadow-[0_0_20px_rgba(6,182,212,0.2)] transition-all duration-300${url ? " cursor-pointer" : ""}`}
+    >
       <div
         className={`text-xs font-bold px-3 py-1.5 rounded whitespace-nowrap ${storeClass}`}
       >
@@ -29,7 +43,7 @@ function DealCard({ store, game, originalPrice, discountPrice, discount }) {
       <span className="text-sm font-bold text-success bg-success/10 border border-success/30 rounded px-2 py-1 whitespace-nowrap">
         -{discount}
       </span>
-    </div>
+    </Wrapper>
   );
 }
 

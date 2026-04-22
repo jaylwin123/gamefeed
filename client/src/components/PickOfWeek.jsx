@@ -13,8 +13,7 @@ export default function PickOfWeek({ pick }) {
 
   const platformList = platforms ?? (platform ? [platform] : []);
   const bodyText = description ?? reason ?? "";
-  const numericScore =
-    score ?? (rating ? parseFloat(rating) : null);
+  const numericScore = score ?? (rating ? parseFloat(rating) : null);
   const percentage = numericScore ? (numericScore / 10) * 100 : 0;
   const prosList = pros ?? [];
   const consList = cons ?? [];
@@ -41,9 +40,7 @@ export default function PickOfWeek({ pick }) {
           <h2 className="text-3xl font-black text-text-primary mb-3 leading-tight">
             {title}
           </h2>
-          <p className="text-text-secondary leading-relaxed mb-5">
-            {bodyText}
-          </p>
+          <p className="text-text-secondary leading-relaxed mb-5">{bodyText}</p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>

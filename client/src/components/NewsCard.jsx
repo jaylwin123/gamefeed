@@ -14,19 +14,33 @@ const CATEGORY_GRADIENTS = {
   DEFAULT: "from-accent-pink/20 to-transparent",
 };
 
+import { useState } from "react";
+import NewsModal from "./NewsModal";
+
 export default function NewsCard({
   category,
   title,
   description,
+  fullDescription,
   platform,
   image,
+  url,
+  source,
 }) {
+  const [open, setOpen] = useState(false);
   const badgeClass = CATEGORY_COLORS[category] || CATEGORY_COLORS.DEFAULT;
   const gradientClass =
     CATEGORY_GRADIENTS[category] || CATEGORY_GRADIENTS.DEFAULT;
 
   return (
-    <div className="bg-bg-card border border-border-dark rounded-xl overflow-hidden flex flex-col hover:border-accent-purple hover:shadow-[0_0_20px_rgba(124,58,237,0.3)] transition-all duration-300 cursor-pointer group">
+    <>
+      {open && (
+        <NewsModal
+          news={{ category, title, description, fullDescription, platform, image, url, source }}
+          onClose={() => setOpen(false)}
+        />
+      )}
+      <div onClick={() => setOpen(true)} className="bg-bg-card border border-border-dark rounded-xl overflow-hidden flex flex-col hover:border-accent-purple hover:shadow-[0_0_20px_rgba(124,58,237,0.3)] transition-all duration-300 cursor-pointer group">
       {/* Imagen */}
       {image ? (
         <div className="relative h-44 overflow-hidden">
@@ -65,6 +79,6 @@ export default function NewsCard({
           {description}
         </p>
       </div>
-    </div>
+    </>
   );
 }
