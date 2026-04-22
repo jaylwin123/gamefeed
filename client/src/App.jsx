@@ -4,6 +4,7 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import History from "./pages/History";
 import EditionView from "./pages/EditionView";
+import NewsArticle from "./pages/NewsArticle";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 export default function App() {
@@ -33,6 +34,14 @@ export default function App() {
         element={
           <ProtectedRoute>
             <EditionView />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/news/:newsletterId/:newsIndex"
+        element={
+          <ProtectedRoute>
+            <NewsArticle />
           </ProtectedRoute>
         }
       />

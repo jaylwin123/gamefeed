@@ -185,6 +185,12 @@ router.get("/schema", (req, res) => {
           url: "string — URL de la fuente original de la noticia (IGN, Eurogamer, web oficial, etc.)",
           source:
             "string — nombre de la fuente, ej: IGN, Eurogamer, PlayStation Blog",
+          reviewLinks: [
+            {
+              label: "string — ej: Review IGN 9/10 por John Smith",
+              url: "string — URL directa al review",
+            },
+          ],
         },
       ],
       deals: [
@@ -273,5 +279,67 @@ router.post("/poll-vote", authenticate, async (req, res) => {
     return res.status(500).json({ error: "Error interno del servidor" });
   }
 });
+
+// GET /api/news/:newsletterId/reviews/:newsIndex
+router.get(
+  "/:newsletterId/reviews/:newsIndex",
+  authenticate,
+  async (req, res) => {
+    const { newsletterId, newsIndex } = req.params;
+    try {
+      const result = await db.execute({
+        sql: `SELECT r.id, r.rating, r.body, r.created_at, u.username
+            FROM news_reviews r
+            JOIN users u ON u.id = r.user_id
+            WHERE r.newsletter_id = ? AND r.news_index = ?
+            ORDER BY r.created_at DESC`,
+        args: [newsletterId, newsIndex],
+      });
+      const myVote = await db.execute({
+        sql: "SELECT rating FROM news_reviews WHERE newsletter_id = ? AND news_index = ? AND user_id = ?",
+        args: [newsletterId, newsIndex, req.user.id],
+      });
+      return res.json({
+        reviews: result.rows.map((r) => ({
+          id: Number(r.id),
+          rating: Number(r.rating),
+          body: r.body,
+          username: r.username,
+          createdAt: r.created_at,
+        })),
+        myRating: myVote.rows[0] ? Number(myVote.rows[0].rating) : null,
+      });
+    } catch {
+      return res.status(500).json({ error: "Error interno del servidor" });
+    }
+  },
+);
+
+// POST /api/news/:newsletterId/reviews/:newsIndex
+router.post(
+  "/:newsletterId/reviews/:newsIndex",
+  authenticate,
+  async (req, res) => {
+    const { newsletterId, newsIndex } = req.params;
+    const { rating, body } = req.body;
+    if (!rating || !body || rating < 1 || rating > 10) {
+      return res
+        .status(400)
+        .json({ error: "rating (1-10) y body son requeridos" });
+    }
+    try {
+      await db.execute({
+        sql: `INSERT INTO news_reviews (newsletter_id, news_index, user_id, rating, body)
+            VALUES (?, ?, ?, ?, ?)
+            ON CONFLICT(user_id, newsletter_id, news_index)
+            DO UPDATE SET rating = excluded.rating, body = excluded.body`,
+        args: [newsletterId, newsIndex, req.user.id, rating, body],
+      });
+      return res.status(201).json({ message: "Review guardada" });
+    } catch {
+      return res.status(500).json({ error: "Error interno del servidor" });
+    }
+  },
+);
 
 module.exports = { router, seedDefaultNewsletter };

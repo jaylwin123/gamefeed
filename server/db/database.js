@@ -31,6 +31,17 @@ async function initDB() {
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       UNIQUE(user_id, newsletter_id)
     );
+
+    CREATE TABLE IF NOT EXISTS news_reviews (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      newsletter_id INTEGER NOT NULL,
+      news_index INTEGER NOT NULL,
+      user_id INTEGER NOT NULL,
+      rating INTEGER NOT NULL CHECK(rating BETWEEN 1 AND 10),
+      body TEXT NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE(user_id, newsletter_id, news_index)
+    );
   `);
 }
 

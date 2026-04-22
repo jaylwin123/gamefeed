@@ -80,7 +80,12 @@ export default function EditionView() {
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {news.map((item, i) => (
-              <NewsCard key={i} {...item} />
+              <NewsCard
+                key={i}
+                {...item}
+                newsletterId={newsletter.id}
+                newsIndex={i}
+              />
             ))}
           </div>
         </section>
