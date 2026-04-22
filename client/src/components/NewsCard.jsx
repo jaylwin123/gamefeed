@@ -25,6 +25,7 @@ export default function NewsCard({
   newsletterId,
   newsIndex,
   featured = false,
+  lastAlone = false,
 }) {
   const navigate = useNavigate();
   const badgeClass = CATEGORY_COLORS[category] || CATEGORY_COLORS.DEFAULT;
@@ -34,7 +35,7 @@ export default function NewsCard({
   return (
     <div
       onClick={() => navigate(`/news/${newsletterId}/${newsIndex}`)}
-      className={`bg-bg-card border border-border-dark rounded-xl overflow-hidden flex flex-col hover:border-accent-purple hover:shadow-[0_0_20px_rgba(124,58,237,0.3)] transition-all duration-300 cursor-pointer group${featured ? " md:col-span-2" : ""}`}
+      className={`bg-bg-card border border-border-dark rounded-xl overflow-hidden flex flex-col hover:border-accent-purple hover:shadow-[0_0_20px_rgba(124,58,237,0.3)] transition-all duration-300 cursor-pointer group${featured || lastAlone ? " md:col-span-2" : ""}`}
     >
       {image ? (
         <div

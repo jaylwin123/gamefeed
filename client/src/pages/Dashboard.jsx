@@ -117,6 +117,8 @@ export default function Dashboard() {
                 : news.filter((n) => n.category === activeCategory);
             const showFeatured =
               activeCategory === "Todas" && filtered.length > 0;
+            const remaining = showFeatured ? filtered.length - 1 : filtered.length;
+            const lastAloneIndex = remaining % 2 !== 0 ? filtered.length - 1 : -1;
             return (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {filtered.map((item, fi) => {
@@ -128,6 +130,7 @@ export default function Dashboard() {
                       newsletterId={newsletter.id}
                       newsIndex={i}
                       featured={showFeatured && fi === 0}
+                      lastAlone={fi === lastAloneIndex}
                     />
                   );
                 })}
