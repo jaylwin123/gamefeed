@@ -110,26 +110,68 @@ export default function NewsArticle() {
             </h1>
 
             {/* Bajada / entradilla */}
-            <p className="text-lg text-accent-cyan font-medium leading-relaxed mb-6 border-l-2 border-accent-purple pl-4">
+            <p className="text-lg text-accent-cyan font-medium leading-relaxed mb-8 border-l-2 border-accent-purple pl-4 italic">
               {news.description}
             </p>
 
-            {/* Cuerpo completo */}
-            {news.fullDescription && (
-              <div className="prose prose-invert max-w-none">
-                {news.fullDescription
-                  .split("\n")
-                  .filter(Boolean)
-                  .map((p, i) => (
-                    <p
-                      key={i}
-                      className="text-text-secondary leading-relaxed mb-4 text-base"
-                    >
-                      {p}
-                    </p>
-                  ))}
-              </div>
-            )}
+            <div className="flex flex-col gap-6">
+              {/* Lead — primer párrafo */}
+              {(news.lead || news.fullDescription) && (
+                <p className="text-base font-bold text-text-primary leading-relaxed">
+                  {news.lead || news.fullDescription?.split("\n\n")?.[0] || ""}
+                </p>
+              )}
+
+              {/* Cuerpo — desarrollo */}
+              {(news.body || news.fullDescription) &&
+                (() => {
+                  const bodyText = news.body
+                    ? news.body
+                    : news.fullDescription
+                        ?.split("\n\n")
+                        .slice(1, -1)
+                        .join("\n\n") || "";
+                  return bodyText ? (
+                    <div className="flex flex-col gap-4">
+                      <p className="text-xs font-bold text-text-muted uppercase tracking-widest border-b border-border-dark pb-2">
+                        Desarrollo
+                      </p>
+                      {bodyText
+                        .split("\n\n")
+                        .filter(Boolean)
+                        .map((p, i) => (
+                          <p
+                            key={i}
+                            className="text-text-secondary leading-relaxed text-base"
+                          >
+                            {p}
+                          </p>
+                        ))}
+                    </div>
+                  ) : null;
+                })()}
+
+              {/* Cierre */}
+              {(news.closing || news.fullDescription) &&
+                (() => {
+                  const closingText = news.closing
+                    ? news.closing
+                    : news.fullDescription?.split("\n\n").slice(-1)[0] || "";
+                  const leadText =
+                    news.lead || news.fullDescription?.split("\n\n")?.[0] || "";
+                  if (!news.closing && closingText === leadText) return null;
+                  return closingText ? (
+                    <div className="flex flex-col gap-2">
+                      <p className="text-xs font-bold text-text-muted uppercase tracking-widest border-b border-border-dark pb-2">
+                        Cierre
+                      </p>
+                      <p className="text-text-secondary leading-relaxed text-base italic border-l-2 border-border-dark pl-4">
+                        {closingText}
+                      </p>
+                    </div>
+                  ) : null;
+                })()}
+            </div>
 
             {/* Links externos */}
             {(news.url || news.reviewLinks?.length > 0) && (
