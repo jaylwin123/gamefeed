@@ -1,3 +1,5 @@
+import { useState, useEffect } from "react";
+
 export default function PickOfWeek({ pick }) {
   const {
     title,
@@ -14,17 +16,47 @@ export default function PickOfWeek({ pick }) {
   const platformList = platforms ?? (platform ? [platform] : []);
   const bodyText = description ?? reason ?? "";
   const numericScore = score ?? (rating ? parseFloat(rating) : null);
-  const percentage = numericScore ? (numericScore / 10) * 100 : 0;
+  const targetPercentage = numericScore ? (numericScore / 10) * 100 : 0;
   const prosList = pros ?? [];
   const consList = cons ?? [];
 
+  const [displayScore, setDisplayScore] = useState(0);
+  const [barWidth, setBarWidth] = useState(0);
+
+  useEffect(() => {
+    if (!numericScore) return;
+    const duration = 1400;
+    const steps = 60;
+    const stepVal = numericScore / steps;
+    const stepPct = targetPercentage / steps;
+    let current = 0;
+    let pct = 0;
+    const timer = setInterval(() => {
+      current += stepVal;
+      pct += stepPct;
+      if (current >= numericScore) {
+        setDisplayScore(numericScore);
+        setBarWidth(targetPercentage);
+        clearInterval(timer);
+      } else {
+        setDisplayScore(parseFloat(current.toFixed(1)));
+        setBarWidth(parseFloat(pct.toFixed(1)));
+      }
+    }, duration / steps);
+    return () => clearInterval(timer);
+  }, [numericScore, targetPercentage]);
+
   return (
-    <div className="bg-gradient-to-br from-bg-card via-[#1a1a2e] to-[#1a0a2e] border border-accent-purple rounded-xl p-6 shadow-[0_0_30px_rgba(124,58,237,0.2)]">
-      <div className="flex flex-col md:flex-row md:items-start gap-6">
+    <div className="relative bg-gradient-to-br from-[#1a0a2e] via-bg-card to-[#0d1a2e] border border-accent-purple rounded-xl p-6 shadow-[0_0_40px_rgba(124,58,237,0.25)] overflow-hidden">
+      {/* Decorative background glow */}
+      <div className="absolute top-0 right-0 w-64 h-64 bg-accent-purple/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-48 h-48 bg-accent-cyan/5 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="relative flex flex-col md:flex-row md:items-start gap-6">
         {/* Info */}
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-2 mb-3">
-            <span className="text-xs font-bold text-accent-yellow bg-accent-yellow/10 border border-accent-yellow/30 rounded px-2 py-1">
+            <span className="text-sm font-display tracking-widest text-accent-yellow bg-accent-yellow/10 border border-accent-yellow/30 rounded px-3 py-1">
               PICK OF THE WEEK ⭐
             </span>
             {platformList.map((p, i) => (
@@ -37,7 +69,7 @@ export default function PickOfWeek({ pick }) {
             ))}
           </div>
 
-          <h2 className="text-3xl font-black text-text-primary mb-3 leading-tight">
+          <h2 className="text-3xl font-black text-text-primary mb-3 leading-tight group-hover:text-accent-cyan">
             {title}
           </h2>
           <p className="text-text-secondary leading-relaxed mb-5">{bodyText}</p>
@@ -81,18 +113,25 @@ export default function PickOfWeek({ pick }) {
         </div>
 
         {/* Score */}
-        <div className="flex flex-col items-center justify-center bg-bg-primary rounded-xl p-6 min-w-[130px] border border-border-dark">
-          <div className="text-6xl font-black text-accent-cyan leading-none">
-            {numericScore ?? "—"}
+        <div className="flex flex-col items-center justify-center bg-bg-primary/80 rounded-xl p-6 min-w-[140px] border border-border-dark shadow-inner">
+          <div className="text-6xl font-black font-display text-accent-cyan leading-none tabular-nums">
+            {displayScore % 1 === 0 ? displayScore : displayScore.toFixed(1)}
           </div>
-          <div className="text-text-muted text-sm mt-1">/ 10</div>
+          <div className="text-text-muted text-sm mt-1 font-display tracking-wider">
+            / 10
+          </div>
           <div className="w-full mt-4 bg-border-dark rounded-full h-2 overflow-hidden">
             <div
-              className="h-2 bg-gradient-to-r from-accent-purple to-accent-cyan rounded-full transition-all duration-1000"
-              style={{ width: `${percentage}%` }}
+              className="h-2 bg-gradient-to-r from-accent-purple to-accent-cyan rounded-full"
+              style={{
+                width: `${barWidth}%`,
+                transition: "width 0.05s linear",
+              }}
             />
           </div>
-          <p className="text-xs text-text-muted mt-2">Score</p>
+          <p className="text-xs text-text-muted mt-2 font-display tracking-widest">
+            SCORE
+          </p>
         </div>
       </div>
     </div>

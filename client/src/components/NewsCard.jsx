@@ -16,6 +16,19 @@ const CATEGORY_GRADIENTS = {
   DEFAULT: "from-accent-pink/20 to-transparent",
 };
 
+const CATEGORY_BORDER = {
+  LANZAMIENTO: "#7c3aed",
+  EXPANSIÓN: "#06b6d4",
+  INDUSTRIA: "#f59e0b",
+  ACTUALIZACIÓN: "#34d399",
+  DEFAULT: "#ec4899",
+};
+
+function estimateReadTime(text) {
+  const words = (text || "").split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 200));
+}
+
 export default function NewsCard({
   category,
   title,
@@ -26,16 +39,26 @@ export default function NewsCard({
   newsIndex,
   featured = false,
   lastAlone = false,
+  index = 0,
+  source,
+  lead,
+  body,
 }) {
   const navigate = useNavigate();
   const badgeClass = CATEGORY_COLORS[category] || CATEGORY_COLORS.DEFAULT;
   const gradientClass =
     CATEGORY_GRADIENTS[category] || CATEGORY_GRADIENTS.DEFAULT;
+  const borderColor = CATEGORY_BORDER[category] || CATEGORY_BORDER.DEFAULT;
+  const readTime = estimateReadTime((body || "") + " " + (description || ""));
 
   return (
     <div
       onClick={() => navigate(`/news/${newsletterId}/${newsIndex}`)}
-      className={`bg-bg-card border border-border-dark rounded-xl overflow-hidden flex flex-col hover:border-accent-purple hover:shadow-[0_0_20px_rgba(124,58,237,0.3)] transition-all duration-300 cursor-pointer group${featured || lastAlone ? " md:col-span-2" : ""}`}
+      style={{
+        borderLeftColor: borderColor,
+        animationDelay: `${index * 0.08}s`,
+      }}
+      className={`bg-bg-card border border-border-dark border-l-4 rounded-xl overflow-hidden flex flex-col hover:border-accent-purple hover:bg-bg-card-hover hover:shadow-[0_0_28px_rgba(124,58,237,0.35)] transition-all duration-300 cursor-pointer group opacity-0 animate-fade-up${featured || lastAlone ? " md:col-span-2" : ""}`}
     >
       {image ? (
         <div
@@ -49,7 +72,12 @@ export default function NewsCard({
               e.currentTarget.parentElement.style.display = "none";
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-bg-card via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-bg-card via-bg-card/20 to-transparent" />
+          {source && (
+            <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-sm text-xs text-text-muted px-2 py-1 rounded font-mono border border-white/10">
+              {source}
+            </div>
+          )}
         </div>
       ) : (
         <div
@@ -61,24 +89,45 @@ export default function NewsCard({
 
       <div className="p-5 flex flex-col gap-3 flex-1">
         <div className="flex items-center justify-between flex-wrap gap-2">
-          <span className={`text-xs font-bold px-2 py-1 rounded ${badgeClass}`}>
+          <span
+            className={`text-xs font-bold px-2 py-1 rounded tracking-wider font-display text-sm ${badgeClass}`}
+          >
             {category}
           </span>
-          <span className="text-xs text-text-muted border border-border-dark rounded px-2 py-1">
-            {platform}
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-text-muted border border-border-dark rounded px-2 py-1">
+              {platform}
+            </span>
+            <span className="text-xs text-text-muted font-mono opacity-60">
+              {readTime} min
+            </span>
+          </div>
         </div>
         <h3
-          className={`font-bold text-text-primary group-hover:text-accent-cyan transition-colors leading-snug${featured ? " text-xl" : " text-base"}`}
+          className={`font-black text-text-primary group-hover:text-accent-cyan transition-colors leading-tight${featured ? " text-2xl" : " text-base"}`}
         >
           {title}
         </h3>
+        {featured && lead && (
+          <p className="text-sm text-accent-cyan/80 italic leading-relaxed border-l-2 border-accent-cyan/40 pl-3">
+            {lead}
+          </p>
+        )}
         <p
           className={`text-sm text-text-secondary leading-relaxed${featured ? "" : " line-clamp-3"}`}
         >
           {description}
         </p>
-        <span className="text-xs text-accent-purple mt-auto">Leer más →</span>
+        <div className="flex items-center justify-between mt-auto pt-1">
+          <span className="text-xs text-accent-purple font-semibold group-hover:text-accent-cyan transition-colors">
+            Leer más →
+          </span>
+          {source && !image && (
+            <span className="text-xs text-text-muted font-mono opacity-50">
+              {source}
+            </span>
+          )}
+        </div>
       </div>
     </div>
   );
