@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import NewsCard from "../components/NewsCard";
+import SkeletonCard from "../components/SkeletonCard";
 import DealsSection from "../components/DealsSection";
 import PickOfWeek from "../components/PickOfWeek";
 import PollSection from "../components/PollSection";
@@ -10,6 +11,7 @@ export default function Dashboard() {
   const [newsletter, setNewsletter] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [activeCategory, setActiveCategory] = useState("Todas");
 
   useEffect(() => {
     api
@@ -21,11 +23,22 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-bg-primary flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-12 h-12 border-2 border-accent-purple border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-text-muted text-sm">Cargando el feed…</p>
-        </div>
+      <div className="min-h-screen bg-bg-primary">
+        <Navbar />
+        <main className="max-w-6xl mx-auto px-4 py-8 space-y-10">
+          <div className="border-b border-border-dark pb-5 flex items-center justify-between">
+            <div className="flex flex-col gap-2">
+              <div className="h-8 w-40 bg-bg-card rounded-lg animate-pulse" />
+              <div className="h-4 w-56 bg-bg-card rounded animate-pulse" />
+            </div>
+            <div className="h-6 w-16 bg-bg-card rounded animate-pulse" />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <SkeletonCard featured />
+            <SkeletonCard />
+            <SkeletonCard />
+          </div>
+        </main>
       </div>
     );
   }
@@ -76,20 +89,51 @@ export default function Dashboard() {
 
         {/* News grid */}
         <section>
-          <h3 className="text-xs font-bold text-text-muted uppercase tracking-widest mb-4 flex items-center gap-2">
-            <span className="w-1 h-4 bg-accent-purple rounded-full inline-block" />
-            Noticias de la semana
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {news.map((item, i) => (
-              <NewsCard
-                key={i}
-                {...item}
-                newsletterId={newsletter.id}
-                newsIndex={i}
-              />
-            ))}
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <h3 className="text-xs font-bold text-text-muted uppercase tracking-widest flex items-center gap-2">
+              <span className="w-1 h-4 bg-accent-purple rounded-full inline-block" />
+              Noticias de la semana
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              {["Todas", ...new Set(news.map((n) => n.category))].map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
+                    activeCategory === cat
+                      ? "bg-accent-purple border-accent-purple text-white"
+                      : "border-border-dark text-text-muted hover:border-accent-purple hover:text-text-primary"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
           </div>
+          {(() => {
+            const filtered =
+              activeCategory === "Todas"
+                ? news
+                : news.filter((n) => n.category === activeCategory);
+            const showFeatured =
+              activeCategory === "Todas" && filtered.length > 0;
+            return (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {filtered.map((item, fi) => {
+                  const i = news.indexOf(item);
+                  return (
+                    <NewsCard
+                      key={i}
+                      {...item}
+                      newsletterId={newsletter.id}
+                      newsIndex={i}
+                      featured={showFeatured && fi === 0}
+                    />
+                  );
+                })}
+              </div>
+            );
+          })()}
         </section>
 
         {/* Deals + Poll */}

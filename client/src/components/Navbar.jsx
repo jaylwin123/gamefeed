@@ -45,13 +45,16 @@ export default function Navbar({ edition }) {
           {dark ? "☀️" : "🌙"}
         </button>
         {user && (
-          <span className="text-sm text-text-secondary hidden sm:block">
-            Hola,{" "}
-            <span className="text-accent-cyan font-semibold">
-              {user.username}
-            </span>{" "}
-            👋
-          </span>
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-full bg-accent-purple/20 border border-accent-purple/50 flex items-center justify-center text-xs font-bold text-accent-purple flex-shrink-0">
+              {user.username[0].toUpperCase()}
+            </div>
+            <span className="text-sm text-text-secondary hidden sm:block">
+              <span className="text-accent-cyan font-semibold">
+                {user.username}
+              </span>
+            </span>
+          </div>
         )}
         <button
           onClick={handleLogout}

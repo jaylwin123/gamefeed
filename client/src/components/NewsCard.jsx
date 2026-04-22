@@ -2,17 +2,17 @@
 
 const CATEGORY_COLORS = {
   LANZAMIENTO: "bg-accent-purple text-white",
-  "EXPANSIÓN": "bg-accent-cyan text-black",
+  EXPANSIÓN: "bg-accent-cyan text-black",
   INDUSTRIA: "bg-accent-yellow text-black",
-  "ACTUALIZACIÓN": "bg-success text-black",
+  ACTUALIZACIÓN: "bg-success text-black",
   DEFAULT: "bg-accent-pink text-white",
 };
 
 const CATEGORY_GRADIENTS = {
   LANZAMIENTO: "from-accent-purple/20 to-transparent",
-  "EXPANSIÓN": "from-accent-cyan/20 to-transparent",
+  EXPANSIÓN: "from-accent-cyan/20 to-transparent",
   INDUSTRIA: "from-accent-yellow/20 to-transparent",
-  "ACTUALIZACIÓN": "from-success/20 to-transparent",
+  ACTUALIZACIÓN: "from-success/20 to-transparent",
   DEFAULT: "from-accent-pink/20 to-transparent",
 };
 
@@ -24,6 +24,7 @@ export default function NewsCard({
   image,
   newsletterId,
   newsIndex,
+  featured = false,
 }) {
   const navigate = useNavigate();
   const badgeClass = CATEGORY_COLORS[category] || CATEGORY_COLORS.DEFAULT;
@@ -33,10 +34,12 @@ export default function NewsCard({
   return (
     <div
       onClick={() => navigate(`/news/${newsletterId}/${newsIndex}`)}
-      className="bg-bg-card border border-border-dark rounded-xl overflow-hidden flex flex-col hover:border-accent-purple hover:shadow-[0_0_20px_rgba(124,58,237,0.3)] transition-all duration-300 cursor-pointer group"
+      className={`bg-bg-card border border-border-dark rounded-xl overflow-hidden flex flex-col hover:border-accent-purple hover:shadow-[0_0_20px_rgba(124,58,237,0.3)] transition-all duration-300 cursor-pointer group${featured ? " md:col-span-2" : ""}`}
     >
       {image ? (
-        <div className="relative h-44 overflow-hidden">
+        <div
+          className={`relative overflow-hidden${featured ? " h-64" : " h-44"}`}
+        >
           <img
             src={image}
             alt={title}
@@ -49,7 +52,7 @@ export default function NewsCard({
         </div>
       ) : (
         <div
-          className={`h-24 bg-gradient-to-br ${gradientClass} border-b border-border-dark flex items-center justify-center`}
+          className={`bg-gradient-to-br ${gradientClass} border-b border-border-dark flex items-center justify-center${featured ? " h-40" : " h-24"}`}
         >
           <span className="text-4xl opacity-30">🎮</span>
         </div>
@@ -64,10 +67,14 @@ export default function NewsCard({
             {platform}
           </span>
         </div>
-        <h3 className="text-base font-bold text-text-primary group-hover:text-accent-cyan transition-colors leading-snug">
+        <h3
+          className={`font-bold text-text-primary group-hover:text-accent-cyan transition-colors leading-snug${featured ? " text-xl" : " text-base"}`}
+        >
           {title}
         </h3>
-        <p className="text-sm text-text-secondary leading-relaxed line-clamp-3">
+        <p
+          className={`text-sm text-text-secondary leading-relaxed${featured ? "" : " line-clamp-3"}`}
+        >
           {description}
         </p>
         <span className="text-xs text-accent-purple mt-auto">Leer más →</span>
