@@ -1,7 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const { db } = require("../db/database");
-const { authenticate } = require("../middleware/authMiddleware");
+const {
+  authenticate,
+  authenticateOptional,
+} = require("../middleware/authMiddleware");
 
 // POST /api/games/:slug — registrar/actualizar info del juego (upsert)
 router.post("/:slug", authenticate, async (req, res) => {
@@ -24,9 +27,9 @@ router.post("/:slug", authenticate, async (req, res) => {
 });
 
 // GET /api/games/:slug — info del juego + avg rating + reviews
-router.get("/:slug", authenticate, async (req, res) => {
+router.get("/:slug", authenticateOptional, async (req, res) => {
   const { slug } = req.params;
-  const userId = req.user.id;
+  const userId = req.user?.id ?? null;
   try {
     const gameRes = await db.execute({
       sql: "SELECT * FROM games WHERE slug = ?",

@@ -44,24 +44,41 @@ export default function Navbar({ edition }) {
         >
           {dark ? "☀️" : "🌙"}
         </button>
-        {user && (
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full bg-accent-purple/20 border border-accent-purple/50 flex items-center justify-center text-xs font-bold text-accent-purple flex-shrink-0">
-              {user.username[0].toUpperCase()}
-            </div>
-            <span className="text-sm text-text-secondary hidden sm:block">
-              <span className="text-accent-cyan font-semibold">
-                {user.username}
+        {user ? (
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-full bg-accent-purple/20 border border-accent-purple/50 flex items-center justify-center text-xs font-bold text-accent-purple flex-shrink-0">
+                {user.username[0].toUpperCase()}
+              </div>
+              <span className="text-sm text-text-secondary hidden sm:block">
+                <span className="text-accent-cyan font-semibold">
+                  {user.username}
+                </span>
               </span>
-            </span>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="text-xs border border-accent-purple text-accent-purple px-3 py-1.5 rounded hover:bg-accent-purple hover:text-white transition-colors"
+            >
+              Logout
+            </button>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => navigate("/login")}
+              className="text-xs text-text-muted hover:text-text-primary transition-colors"
+            >
+              Iniciar sesión
+            </button>
+            <button
+              onClick={() => navigate("/register")}
+              className="text-xs bg-accent-purple text-white px-3 py-1.5 rounded hover:bg-accent-purple/80 transition-colors"
+            >
+              Registrarse
+            </button>
           </div>
         )}
-        <button
-          onClick={handleLogout}
-          className="text-xs border border-accent-purple text-accent-purple px-3 py-1.5 rounded hover:bg-accent-purple hover:text-white transition-colors"
-        >
-          Logout
-        </button>
       </div>
     </nav>
   );

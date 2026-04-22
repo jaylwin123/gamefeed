@@ -19,6 +19,22 @@ function authenticate(req, res, next) {
   }
 }
 
+// Si hay token lo valida, si no hay continúa con req.user = null
+function authenticateOptional(req, res, next) {
+  const authHeader = req.headers["authorization"];
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    req.user = null;
+    return next();
+  }
+  const token = authHeader.split(" ")[1];
+  try {
+    req.user = jwt.verify(token, JWT_SECRET);
+  } catch {
+    req.user = null;
+  }
+  next();
+}
+
 // Acepta JWT de usuario O API Key de Routines de Cloud
 function authenticateRoutine(req, res, next) {
   const authHeader = req.headers["authorization"];
@@ -44,4 +60,4 @@ function authenticateRoutine(req, res, next) {
   }
 }
 
-module.exports = { authenticate, authenticateRoutine };
+module.exports = { authenticate, authenticateOptional, authenticateRoutine };

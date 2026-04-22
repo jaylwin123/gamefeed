@@ -3,6 +3,7 @@ const router = express.Router();
 const { db } = require("../db/database");
 const {
   authenticate,
+  authenticateOptional,
   authenticateRoutine,
 } = require("../middleware/authMiddleware");
 
@@ -107,7 +108,7 @@ async function seedDefaultNewsletter() {
 }
 
 // GET /api/news/history
-router.get("/history", authenticate, async (req, res) => {
+router.get("/history", async (req, res) => {
   try {
     const result = await db.execute(
       "SELECT id, edition, date FROM newsletters ORDER BY edition DESC",
@@ -125,7 +126,7 @@ router.get("/history", authenticate, async (req, res) => {
 });
 
 // GET /api/news/latest
-router.get("/latest", authenticate, async (req, res) => {
+router.get("/latest", async (req, res) => {
   try {
     const result = await db.execute(
       "SELECT * FROM newsletters ORDER BY edition DESC LIMIT 1",
@@ -145,7 +146,7 @@ router.get("/latest", authenticate, async (req, res) => {
 });
 
 // GET /api/news/:id  — debe ir DESPUÉS de las rutas con nombres fijos
-router.get("/:id", authenticate, async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
     const result = await db.execute({
       sql: "SELECT * FROM newsletters WHERE id = ?",
@@ -280,10 +281,9 @@ router.post("/poll-vote", authenticate, async (req, res) => {
   }
 });
 
-// GET /api/news/:newsletterId/reviews/:newsIndex
 router.get(
   "/:newsletterId/reviews/:newsIndex",
-  authenticate,
+  authenticateOptional,
   async (req, res) => {
     const { newsletterId, newsIndex } = req.params;
     try {
@@ -295,10 +295,14 @@ router.get(
             ORDER BY r.created_at DESC`,
         args: [newsletterId, newsIndex],
       });
-      const myVote = await db.execute({
-        sql: "SELECT rating FROM news_reviews WHERE newsletter_id = ? AND news_index = ? AND user_id = ?",
-        args: [newsletterId, newsIndex, req.user.id],
-      });
+      let myRating = null;
+      if (req.user) {
+        const myVote = await db.execute({
+          sql: "SELECT rating FROM news_reviews WHERE newsletter_id = ? AND news_index = ? AND user_id = ?",
+          args: [newsletterId, newsIndex, req.user.id],
+        });
+        myRating = myVote.rows[0] ? Number(myVote.rows[0].rating) : null;
+      }
       return res.json({
         reviews: result.rows.map((r) => ({
           id: Number(r.id),
@@ -307,7 +311,7 @@ router.get(
           username: r.username,
           createdAt: r.created_at,
         })),
-        myRating: myVote.rows[0] ? Number(myVote.rows[0].rating) : null,
+        myRating,
       });
     } catch {
       return res.status(500).json({ error: "Error interno del servidor" });

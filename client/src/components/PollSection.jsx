@@ -1,7 +1,11 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
+import { useAuth } from "../context/AuthContext";
 
 export default function PollSection({ poll, newsletterId }) {
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   const [votes, setVotes] = useState(
     poll.votes && poll.votes.length
       ? poll.votes
@@ -20,6 +24,10 @@ export default function PollSection({ poll, newsletterId }) {
 
   async function handleVote(index) {
     if (voted) return;
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
     try {
       const res = await api.post("/news/poll-vote", {
         newsletterId,
@@ -108,6 +116,24 @@ export default function PollSection({ poll, newsletterId }) {
       {voted && (
         <p className="text-xs text-text-muted mt-4 text-center">
           ¡Gracias por votar! Vuelve la próxima semana.
+        </p>
+      )}
+      {!voted && !isAuthenticated && (
+        <p className="text-xs text-text-muted mt-4 text-center">
+          <button
+            onClick={() => navigate("/login")}
+            className="text-accent-cyan hover:underline"
+          >
+            Iniciá sesión
+          </button>{" "}
+          o{" "}
+          <button
+            onClick={() => navigate("/register")}
+            className="text-accent-cyan hover:underline"
+          >
+            creá una cuenta
+          </button>{" "}
+          para votar.
         </p>
       )}
     </div>

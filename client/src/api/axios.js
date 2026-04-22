@@ -21,9 +21,13 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem("gf_token");
-      localStorage.removeItem("gf_user");
-      window.location.href = "/login";
+      // Solo redirigir si había un token (sesión expirada), no si es anónimo
+      const hadToken = Boolean(localStorage.getItem("gf_token"));
+      if (hadToken) {
+        localStorage.removeItem("gf_token");
+        localStorage.removeItem("gf_user");
+        window.location.href = "/login";
+      }
     }
     return Promise.reject(error);
   },

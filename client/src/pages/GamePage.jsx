@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import api from "../api/axios";
+import { useAuth } from "../context/AuthContext";
 
 function StarRating({ value, onChange }) {
   const [hover, setHover] = useState(null);
@@ -54,6 +55,7 @@ export default function GamePage() {
   const { slug } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const { isAuthenticated } = useAuth();
   const navState = location.state || {};
 
   const [game, setGame] = useState(null);
@@ -86,8 +88,8 @@ export default function GamePage() {
   }
 
   useEffect(() => {
-    // Si viene con state, registrar el juego primero (upsert)
-    if (navState.title) {
+    // Si viene con state y está autenticado, registrar el juego primero (upsert)
+    if (navState.title && isAuthenticated) {
       api
         .post(`/games/${slug}`, {
           title: navState.title,
@@ -210,48 +212,72 @@ export default function GamePage() {
               <p className="text-xs font-bold text-text-muted uppercase tracking-widest mb-4">
                 {myRating ? "Tu review" : "Dejar review"}
               </p>
-              {success && (
-                <p className="text-xs text-success mb-3">
-                  ✓ Review guardado correctamente
-                </p>
-              )}
-              <form onSubmit={submitReview} className="flex flex-col gap-4">
-                <div>
-                  <p className="text-xs text-text-muted mb-2">Puntaje</p>
-                  <StarRating
-                    value={form.rating}
-                    onChange={(n) => {
-                      setForm((f) => ({ ...f, rating: n }));
-                      setSuccess(false);
-                    }}
-                  />
+              {!isAuthenticated ? (
+                <div className="flex flex-col items-center gap-3 py-4 text-center">
+                  <p className="text-sm text-text-secondary">
+                    Iniciá sesión para dejar tu review del juego.
+                  </p>
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => navigate("/login")}
+                      className="text-sm border border-accent-purple text-accent-purple px-4 py-2 rounded-lg hover:bg-accent-purple hover:text-white transition-colors"
+                    >
+                      Iniciar sesión
+                    </button>
+                    <button
+                      onClick={() => navigate("/register")}
+                      className="text-sm bg-accent-purple text-white px-4 py-2 rounded-lg hover:bg-accent-purple/80 transition-colors"
+                    >
+                      Crear cuenta
+                    </button>
+                  </div>
                 </div>
-                <textarea
-                  value={form.body}
-                  onChange={(e) => {
-                    setForm((f) => ({ ...f, body: e.target.value }));
-                    setSuccess(false);
-                  }}
-                  placeholder="¿Qué opinás del juego?"
-                  rows={4}
-                  maxLength={600}
-                  className="w-full bg-bg-primary border border-border-dark rounded-lg px-3 py-2 text-sm text-text-primary placeholder-text-muted resize-none focus:outline-none focus:border-accent-purple transition-colors"
-                />
-                {formError && (
-                  <p className="text-xs text-danger">{formError}</p>
-                )}
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="w-full py-2 bg-accent-purple text-white text-sm font-bold rounded-lg hover:bg-accent-purple/80 transition-colors disabled:opacity-50"
-                >
-                  {submitting
-                    ? "Guardando…"
-                    : myRating
-                      ? "Actualizar review"
-                      : "Publicar review"}
-                </button>
-              </form>
+              ) : (
+                <>
+                  {success && (
+                    <p className="text-xs text-success mb-3">
+                      ✓ Review guardado correctamente
+                    </p>
+                  )}
+                  <form onSubmit={submitReview} className="flex flex-col gap-4">
+                    <div>
+                      <p className="text-xs text-text-muted mb-2">Puntaje</p>
+                      <StarRating
+                        value={form.rating}
+                        onChange={(n) => {
+                          setForm((f) => ({ ...f, rating: n }));
+                          setSuccess(false);
+                        }}
+                      />
+                    </div>
+                    <textarea
+                      value={form.body}
+                      onChange={(e) => {
+                        setForm((f) => ({ ...f, body: e.target.value }));
+                        setSuccess(false);
+                      }}
+                      placeholder="¿Qué opinás del juego?"
+                      rows={4}
+                      maxLength={600}
+                      className="w-full bg-bg-primary border border-border-dark rounded-lg px-3 py-2 text-sm text-text-primary placeholder-text-muted resize-none focus:outline-none focus:border-accent-purple transition-colors"
+                    />
+                    {formError && (
+                      <p className="text-xs text-danger">{formError}</p>
+                    )}
+                    <button
+                      type="submit"
+                      disabled={submitting}
+                      className="w-full py-2 bg-accent-purple text-white text-sm font-bold rounded-lg hover:bg-accent-purple/80 transition-colors disabled:opacity-50"
+                    >
+                      {submitting
+                        ? "Guardando…"
+                        : myRating
+                          ? "Actualizar review"
+                          : "Publicar review"}
+                    </button>
+                  </form>
+                </>
+              )}
             </div>
 
             {/* Lista de reviews */}
