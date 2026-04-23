@@ -243,6 +243,28 @@ router.post("/publish", authenticateRoutine, async (req, res) => {
   }
 });
 
+// PUT /api/news/publish/:id  — update existing newsletter content
+router.put("/publish/:id", authenticateRoutine, async (req, res) => {
+  const { id } = req.params;
+  const { edition, news, deals, pick, poll } = req.body;
+  if (!news || !deals || !pick || !poll) {
+    return res.status(400).json({ error: "Todos los campos son requeridos" });
+  }
+  try {
+    const content = JSON.stringify({ news, deals, pick, poll });
+    const date = new Date().toISOString().split("T")[0];
+    const result = await db.execute({
+      sql: "UPDATE newsletters SET edition = ?, date = ?, content = ? WHERE id = ?",
+      args: [edition, date, content, id],
+    });
+    if (result.rowsAffected === 0)
+      return res.status(404).json({ error: "Newsletter no encontrado" });
+    return res.json({ message: "Newsletter actualizado", id: Number(id) });
+  } catch {
+    return res.status(500).json({ error: "Error interno del servidor" });
+  }
+});
+
 // POST /api/news/poll-vote
 router.post("/poll-vote", authenticate, async (req, res) => {
   const { newsletterId, optionIndex } = req.body;
