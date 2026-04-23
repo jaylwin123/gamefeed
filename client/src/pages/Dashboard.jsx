@@ -10,17 +10,18 @@ import TickerBar from "../components/TickerBar";
 import Footer from "../components/Footer";
 import api from "../api/axios";
 
-function SectionDivider({ color = "purple" }) {
-  const gradients = {
-    purple: "from-transparent via-accent-purple/30 to-transparent",
-    cyan: "from-transparent via-accent-cyan/30 to-transparent",
-    pink: "from-transparent via-accent-pink/30 to-transparent",
-    yellow: "from-transparent via-accent-yellow/30 to-transparent",
-  };
+function SectionDivider({ label = "// SECTION" }) {
   return (
-    <div
-      className={`h-px bg-gradient-to-r ${gradients[color] || gradients.purple}`}
-    />
+    <div className="flex items-center gap-4 my-2">
+      <div
+        className="w-2.5 h-2.5 flex-shrink-0 rotate-45 bg-accent-purple"
+        style={{ boxShadow: "0 0 10px #7c3aed" }}
+      />
+      <span className="font-mono-jet text-[11px] text-text-muted tracking-widest uppercase flex-shrink-0">
+        {label}
+      </span>
+      <div className="flex-1 h-px bg-gradient-to-r from-accent-purple/30 to-transparent" />
+    </div>
   );
 }
 
@@ -123,47 +124,119 @@ export default function Dashboard() {
 
       <main className="max-w-6xl mx-auto px-4 py-8 space-y-10">
         {/* Edition header */}
-        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border-dark pb-5">
-          <div>
-            <h2 className="text-2xl font-black text-text-primary">
-              Edición{" "}
-              <span className="glow-text text-accent-purple font-display text-3xl">
-                #{edition}
-              </span>
-            </h2>
-            <p className="text-sm text-text-muted mt-1 capitalize">
-              {formattedDate}
-            </p>
+        <div
+          className="relative pb-8 mb-2"
+          style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+        >
+          <div
+            className="absolute bottom-[-1px] left-0 w-64 h-px"
+            style={{
+              background: "linear-gradient(90deg, #7c3aed, transparent)",
+              boxShadow: "0 0 8px #7c3aed",
+            }}
+          />
+          <div className="font-mono-jet text-[11px] text-text-muted tracking-[0.25em] uppercase mb-3 flex items-center gap-2.5">
+            <span className="w-6 h-px bg-accent-purple inline-block" />
+            Daily Drop ·{" "}
+            {new Date().toLocaleDateString("es-ES", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+            })}
           </div>
-          <div className="flex items-center gap-3">
-            {countdown && (
-              <span className="text-xs text-text-muted border border-border-dark rounded px-3 py-1.5 font-mono">
-                Próxima en {countdown}
+          <div className="flex flex-wrap items-end justify-between gap-6">
+            <div className="flex items-baseline gap-5">
+              <div
+                className="font-archivo leading-[0.85] tracking-[-0.05em] select-none"
+                style={{
+                  fontSize: "clamp(72px, 11vw, 148px)",
+                  background: "linear-gradient(180deg, #fff 20%, #7c3aed 95%)",
+                  WebkitBackgroundClip: "text",
+                  backgroundClip: "text",
+                  color: "transparent",
+                  textShadow: "0 0 80px rgba(124,58,237,0.4)",
+                }}
+              >
+                <span
+                  className="glow-purple text-[0.55em] align-[0.4em] mr-1"
+                  style={{ WebkitTextFillColor: "#7c3aed" }}
+                >
+                  #
+                </span>
+                {edition}
+              </div>
+              <div>
+                <div className="font-grotesk font-bold text-lg text-text-muted uppercase tracking-[0.2em]">
+                  Edición
+                </div>
+                <div className="font-mono-jet text-[13px] text-text-muted capitalize mt-3">
+                  {formattedDate}
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-col gap-2.5 items-end">
+              <span
+                className="inline-flex items-center gap-2 font-mono-jet text-[11px] px-3.5 py-2 rounded-full border tracking-[0.1em] uppercase"
+                style={{
+                  borderColor: "rgba(239,68,68,0.4)",
+                  background: "rgba(239,68,68,0.08)",
+                  color: "#fca5a5",
+                }}
+              >
+                <span
+                  className="w-2 h-2 rounded-full bg-danger dot-pulse"
+                  style={{ boxShadow: "0 0 10px #ef4444" }}
+                />
+                LIVE · On Air
               </span>
-            )}
-            <span className="text-xs text-accent-cyan border border-accent-cyan/30 rounded px-3 py-1.5 font-mono">
-              LIVE 🔴
-            </span>
+              {countdown && (
+                <span
+                  className="inline-flex items-center gap-2 font-mono-jet text-[11px] px-3.5 py-2 rounded-full border tracking-[0.1em] uppercase text-text-muted"
+                  style={{
+                    borderColor: "rgba(6,182,212,0.25)",
+                    background: "rgba(255,255,255,0.02)",
+                  }}
+                >
+                  <span className="text-text-muted opacity-60">NEXT DROP</span>
+                  <b className="text-accent-cyan">{countdown}</b>
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
         {/* News grid */}
         <section>
-          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-            <h3 className="text-xs font-bold text-text-muted uppercase tracking-widest flex items-center gap-2">
-              <span className="w-1 h-4 bg-accent-purple rounded-full inline-block" />
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+            <h3 className="font-grotesk font-bold text-2xl text-text-primary flex items-center gap-3.5">
+              <span
+                className="w-1.5 h-7 rounded-sm bg-accent-purple inline-block"
+                style={{ boxShadow: "0 0 12px #7c3aed" }}
+              />
               Noticias de la semana
+              <span className="font-mono-jet text-[11px] text-text-muted font-normal">
+                / {news.length.toString().padStart(2, "0")} stories
+              </span>
             </h3>
             <div className="flex flex-wrap gap-2">
               {["Todas", ...new Set(news.map((n) => n.category))].map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setActiveCategory(cat)}
-                  className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
+                  className="font-mono-jet text-[11px] uppercase tracking-widest px-3.5 py-1.5 rounded-full border transition-all duration-200"
+                  style={
                     activeCategory === cat
-                      ? "bg-accent-purple border-accent-purple text-white"
-                      : "border-border-dark text-text-muted hover:border-accent-purple hover:text-text-primary"
-                  }`}
+                      ? {
+                          borderColor: "#7c3aed",
+                          background: "rgba(124,58,237,0.2)",
+                          color: "#c4b5fd",
+                          boxShadow: "0 0 12px rgba(124,58,237,0.3)",
+                        }
+                      : {
+                          borderColor: "rgba(255,255,255,0.08)",
+                          color: "var(--text-muted)",
+                        }
+                  }
                 >
                   {cat}
                 </button>
@@ -183,7 +256,7 @@ export default function Dashboard() {
             const lastAloneIndex =
               remaining % 2 !== 0 ? filtered.length - 1 : -1;
             return (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-6 gap-5">
                 {filtered.map((item, fi) => {
                   const i = news.indexOf(item);
                   return (
@@ -203,34 +276,52 @@ export default function Dashboard() {
           })()}
         </section>
 
-        <SectionDivider color="cyan" />
+        <SectionDivider label="// 02 — OFERTAS / ENCUESTA" />
 
         {/* Deals + Poll */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <section>
-            <h3 className="text-xs font-bold text-text-muted uppercase tracking-widest mb-4 flex items-center gap-2">
-              <span className="w-1 h-4 bg-accent-cyan rounded-full inline-block" />
+            <h3 className="font-grotesk font-bold text-2xl text-text-primary flex items-center gap-3.5 mb-6">
+              <span
+                className="w-1.5 h-7 rounded-sm bg-accent-cyan inline-block"
+                style={{ boxShadow: "0 0 12px #06b6d4" }}
+              />
               Ofertas de la semana
+              <span className="font-mono-jet text-[11px] text-text-muted font-normal">
+                / 03 active
+              </span>
             </h3>
             <DealsSection deals={deals} />
           </section>
 
           <section>
-            <h3 className="text-xs font-bold text-text-muted uppercase tracking-widest mb-4 flex items-center gap-2">
-              <span className="w-1 h-4 bg-accent-pink rounded-full inline-block" />
+            <h3 className="font-grotesk font-bold text-2xl text-text-primary flex items-center gap-3.5 mb-6">
+              <span
+                className="w-1.5 h-7 rounded-sm bg-accent-pink inline-block"
+                style={{ boxShadow: "0 0 12px #ec4899" }}
+              />
               Encuesta del feed
+              <span className="font-mono-jet text-[11px] text-text-muted font-normal">
+                / 01 active
+              </span>
             </h3>
             <PollSection poll={poll} newsletterId={newsletter.id} />
           </section>
         </div>
 
-        <SectionDivider color="yellow" />
+        <SectionDivider label="// 03 — PICK OF THE WEEK" />
 
         {/* Pick of the week */}
         <section>
-          <h3 className="text-xs font-bold text-text-muted uppercase tracking-widest mb-4 flex items-center gap-2">
-            <span className="w-1 h-4 bg-accent-yellow rounded-full inline-block" />
+          <h3 className="font-grotesk font-bold text-2xl text-text-primary flex items-center gap-3.5 mb-6">
+            <span
+              className="w-1.5 h-7 rounded-sm bg-accent-yellow inline-block"
+              style={{ boxShadow: "0 0 12px #f59e0b" }}
+            />
             Pick of the Week
+            <span className="font-mono-jet text-[11px] text-text-muted font-normal">
+              / editor's choice
+            </span>
           </h3>
           <PickOfWeek pick={pick} />
         </section>

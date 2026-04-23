@@ -1,8 +1,16 @@
-const STORE_COLORS = {
-  Steam: "bg-blue-600 text-white",
-  Epic: "bg-gray-700 text-white",
-  "PS Store": "bg-blue-800 text-white",
-  DEFAULT: "bg-accent-purple text-white",
+const STORE_DOT = {
+  Steam: "#1b9fe8",
+  Epic: "#9ca3af",
+  "PS Store": "#3b82f6",
+  DEFAULT: "#7c3aed",
+};
+
+const COVER_BG = {
+  Steam: "linear-gradient(135deg, rgba(27,159,232,0.3), rgba(124,58,237,0.2))",
+  Epic: "linear-gradient(135deg, rgba(156,163,175,0.3), rgba(124,58,237,0.2))",
+  "PS Store":
+    "linear-gradient(135deg, rgba(59,130,246,0.3), rgba(124,58,237,0.2))",
+  DEFAULT: "linear-gradient(135deg, rgba(124,58,237,0.3), rgba(6,182,212,0.2))",
 };
 
 function DealCard({
@@ -13,72 +21,92 @@ function DealCard({
   discount,
   url,
 }) {
-  const storeClass = STORE_COLORS[store] || STORE_COLORS.DEFAULT;
+  const dotColor = STORE_DOT[store] || STORE_DOT.DEFAULT;
+  const coverBg = COVER_BG[store] || COVER_BG.DEFAULT;
   const Wrapper = url ? "a" : "div";
   const wrapperProps = url
     ? { href: url, target: "_blank", rel: "noopener noreferrer" }
     : {};
-
+  const discountNum =
+    parseInt((discount || "").replace(/[^0-9]/g, ""), 10) || 0;
   const isFree =
     discountPrice === "$0" ||
     discountPrice === "$0.00" ||
     discountPrice?.toLowerCase() === "gratis" ||
     discountPrice === "0";
 
-  const discountNum =
-    parseInt((discount || "").replace(/[^0-9]/g, ""), 10) || 0;
-
   return (
     <Wrapper
       {...wrapperProps}
-      className={`bg-bg-card border border-border-dark rounded-xl p-4 flex flex-col gap-3 hover:border-accent-cyan hover:shadow-[0_0_20px_rgba(6,182,212,0.2)] hover:-translate-y-0.5 transition-all duration-300${url ? " cursor-pointer" : ""}`}
+      className={`relative flex items-center gap-4 p-4 rounded-xl border border-white/[0.08] transition-all duration-300 group${url ? " cursor-pointer" : ""}`}
+      style={{ background: "rgba(26,26,46,0.6)" }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.borderColor = "rgba(6,182,212,0.4)";
+        e.currentTarget.style.transform = "translateX(4px)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.borderColor = "";
+        e.currentTarget.style.transform = "";
+      }}
     >
-      <div className="flex items-center gap-4">
-        <div
-          className={`text-xs font-bold px-3 py-1.5 rounded whitespace-nowrap ${storeClass}`}
-        >
+      {/* Left accent */}
+      <div
+        className="absolute left-0 top-3 bottom-3 w-[3px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+        style={{ background: "linear-gradient(180deg, #06b6d4, transparent)" }}
+      />
+
+      {/* Cover */}
+      <div
+        className="w-14 h-14 rounded-lg flex-shrink-0 flex items-center justify-center font-mono-jet text-[9px] text-white/30 uppercase tracking-widest text-center leading-tight"
+        style={{ background: coverBg }}
+      >
+        COVER
+        <br />
+        ART
+      </div>
+
+      {/* Info */}
+      <div className="flex-1 min-w-0">
+        <div className="font-mono-jet text-[11px] text-text-muted flex items-center gap-2 mb-1">
+          <span
+            className="w-1.5 h-1.5 rounded-full"
+            style={{ background: dotColor, boxShadow: `0 0 6px ${dotColor}` }}
+          />
           {store}
         </div>
-        <div className="flex-1 min-w-0">
-          <p className="font-semibold text-text-primary truncate">{game}</p>
-          <div className="flex items-center gap-2 mt-1">
-            {!isFree && (
-              <span className="text-sm text-text-muted line-through">
-                {originalPrice}
-              </span>
-            )}
-            {isFree ? (
-              <span className="text-base font-black text-success tracking-wide">
-                GRATIS
-              </span>
-            ) : (
-              <span className="text-lg font-bold text-accent-cyan">
-                {discountPrice}
-              </span>
-            )}
-          </div>
+        <p className="font-grotesk font-semibold text-sm text-text-primary truncate">
+          {game}
+        </p>
+        <div className="flex items-center gap-2 mt-1">
+          {!isFree && (
+            <span className="font-mono-jet text-xs text-text-muted line-through">
+              {originalPrice}
+            </span>
+          )}
+          {isFree ? (
+            <span className="font-archivo text-sm text-success tracking-wide">
+              GRATIS
+            </span>
+          ) : (
+            <span className="font-archivo text-base text-accent-cyan">
+              {discountPrice}
+            </span>
+          )}
         </div>
-        <span
-          className={`text-sm font-bold border rounded px-2 py-1 whitespace-nowrap ${
-            isFree
-              ? "text-success bg-success/10 border-success/30"
-              : "text-success bg-success/10 border-success/30"
-          }`}
+      </div>
+
+      {/* Discount badge */}
+      <div className="text-right flex-shrink-0">
+        <div
+          className="font-archivo text-lg text-success"
+          style={{ textShadow: "0 0 12px rgba(52,211,153,0.5)" }}
         >
-          {isFree ? "100%" : discount}
+          -{isFree ? "100" : discountNum}%
+        </div>
+        <span className="font-mono-jet text-[10px] text-text-muted">
+          {originalPrice}
         </span>
       </div>
-      {discountNum > 0 && (
-        <div className="h-1 bg-border-dark rounded-full overflow-hidden">
-          <div
-            className="h-full bg-gradient-to-r from-accent-cyan to-success rounded-full"
-            style={{
-              width: `${Math.min(discountNum, 100)}%`,
-              transition: "width 0.8s ease-out",
-            }}
-          />
-        </div>
-      )}
     </Wrapper>
   );
 }
