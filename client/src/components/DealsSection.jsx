@@ -20,6 +20,7 @@ function DealCard({
   discountPrice,
   discount,
   url,
+  image,
 }) {
   const dotColor = STORE_DOT[store] || STORE_DOT.DEFAULT;
   const coverBg = COVER_BG[store] || COVER_BG.DEFAULT;
@@ -56,14 +57,22 @@ function DealCard({
       />
 
       {/* Cover */}
-      <div
-        className="w-14 h-14 rounded-lg flex-shrink-0 flex items-center justify-center font-mono-jet text-[9px] text-white/30 uppercase tracking-widest text-center leading-tight"
-        style={{ background: coverBg }}
-      >
-        COVER
-        <br />
-        ART
-      </div>
+      {image ? (
+        <img
+          src={image}
+          alt={game}
+          className="w-14 h-14 rounded-lg flex-shrink-0 object-cover"
+        />
+      ) : (
+        <div
+          className="w-14 h-14 rounded-lg flex-shrink-0 flex items-center justify-center font-mono-jet text-[9px] text-white/30 uppercase tracking-widest text-center leading-tight"
+          style={{ background: coverBg }}
+        >
+          COVER
+          <br />
+          ART
+        </div>
+      )}
 
       {/* Info */}
       <div className="flex-1 min-w-0">

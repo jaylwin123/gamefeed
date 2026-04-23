@@ -17,6 +17,7 @@ export default function PickOfWeek({ pick }) {
     slug,
     quote,
     quoteAuthor,
+    image,
   } = pick;
 
   const navigate = useNavigate();
@@ -121,17 +122,25 @@ export default function PickOfWeek({ pick }) {
           <div className="font-archivo text-[11px] tracking-[0.3em] uppercase text-accent-yellow/80 mb-2">
             ★ GOLD PICK
           </div>
-          <div
-            className="w-24 h-24 rounded-xl flex items-center justify-center border border-accent-yellow/20"
-            style={{
-              background:
-                "linear-gradient(135deg, rgba(245,158,11,0.25), rgba(236,72,153,0.18))",
-            }}
-          >
-            <span className="font-display text-4xl text-accent-yellow/40">
-              ★
-            </span>
-          </div>
+          {image ? (
+            <img
+              src={image}
+              alt={title}
+              className="w-24 h-24 rounded-xl object-cover border border-accent-yellow/20"
+            />
+          ) : (
+            <div
+              className="w-24 h-24 rounded-xl flex items-center justify-center border border-accent-yellow/20"
+              style={{
+                background:
+                  "linear-gradient(135deg, rgba(245,158,11,0.25), rgba(236,72,153,0.18))",
+              }}
+            >
+              <span className="font-display text-4xl text-accent-yellow/40">
+                ★
+              </span>
+            </div>
+          )}
           <div className="font-mono-jet text-[10px] text-text-muted uppercase tracking-widest text-center">
             GAME COVER
             <br />
