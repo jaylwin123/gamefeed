@@ -129,7 +129,7 @@ router.get("/history", async (req, res) => {
 router.get("/latest", async (req, res) => {
   try {
     const result = await db.execute(
-      "SELECT * FROM newsletters ORDER BY edition DESC LIMIT 1",
+      "SELECT * FROM newsletters ORDER BY edition DESC, id DESC LIMIT 1",
     );
     const newsletter = result.rows[0];
     if (!newsletter)
