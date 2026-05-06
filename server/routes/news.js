@@ -145,6 +145,41 @@ router.get("/latest", async (req, res) => {
   }
 });
 
+// GET /api/news/feed?page=1&limit=8  — noticias de ediciones anteriores paginadas
+router.get("/feed", async (req, res) => {
+  const page = Math.max(1, parseInt(req.query.page || "1", 10));
+  const limit = Math.min(20, Math.max(1, parseInt(req.query.limit || "8", 10)));
+  try {
+    const result = await db.execute(
+      "SELECT id, edition, date, content FROM newsletters ORDER BY edition DESC, id DESC",
+    );
+    const rows = result.rows;
+    // Skip the latest edition (index 0); aggregate news from the rest
+    const pastRows = rows.slice(1);
+    if (pastRows.length === 0) return res.json({ items: [], hasMore: false, total: 0, page });
+
+    const allNews = [];
+    for (const row of pastRows) {
+      const content = JSON.parse(row.content);
+      (content.news || []).forEach((item, idx) => {
+        allNews.push({
+          ...item,
+          newsletterId: Number(row.id),
+          newsIndex: idx,
+          edition: Number(row.edition),
+          date: row.date,
+        });
+      });
+    }
+
+    const start = (page - 1) * limit;
+    const items = allNews.slice(start, start + limit);
+    return res.json({ items, hasMore: start + limit < allNews.length, total: allNews.length, page });
+  } catch {
+    return res.status(500).json({ error: "Error interno del servidor" });
+  }
+});
+
 // GET /api/news/:id  — debe ir DESPUÉS de las rutas con nombres fijos
 router.get("/:id", async (req, res) => {
   try {

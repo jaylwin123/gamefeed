@@ -61,6 +61,7 @@ function DealCard({
         <img
           src={image}
           alt={game}
+          loading="lazy"
           className="w-14 h-14 rounded-lg flex-shrink-0 object-cover"
         />
       ) : (

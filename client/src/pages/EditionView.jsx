@@ -5,6 +5,9 @@ import NewsCard from "../components/NewsCard";
 import DealsSection from "../components/DealsSection";
 import PickOfWeek from "../components/PickOfWeek";
 import PollSection from "../components/PollSection";
+import Footer from "../components/Footer";
+import BackToTop from "../components/BackToTop";
+import TickerBar from "../components/TickerBar";
 import api from "../api/axios";
 
 export default function EditionView() {
@@ -32,8 +35,25 @@ export default function EditionView() {
 
   if (error || !newsletter) {
     return (
-      <div className="min-h-screen bg-bg-primary flex items-center justify-center">
-        <p className="text-danger">{error || "Edición no encontrada"}</p>
+      <div className="min-h-screen bg-bg-primary flex items-center justify-center px-4">
+        <div className="flex flex-col items-center gap-5 text-center max-w-sm">
+          <div
+            className="w-16 h-16 rounded-2xl flex items-center justify-center border border-danger/30"
+            style={{ background: "rgba(239,68,68,0.08)" }}
+          >
+            <span className="font-archivo text-3xl text-danger/60">!</span>
+          </div>
+          <div>
+            <p className="font-grotesk font-bold text-lg text-text-primary">Edición no encontrada</p>
+            <p className="font-mono-jet text-[12px] text-text-muted mt-1">{error || "Esta edición no existe o fue eliminada"}</p>
+          </div>
+          <button
+            onClick={() => navigate("/history")}
+            className="font-mono-jet text-[11px] border border-accent-purple/40 text-accent-purple px-5 py-2 rounded-lg hover:bg-accent-purple hover:text-white transition-colors"
+          >
+            &#8592; Ver todas las ediciones
+          </button>
+        </div>
       </div>
     );
   }
@@ -50,8 +70,9 @@ export default function EditionView() {
   })();
 
   return (
-    <div className="min-h-screen bg-bg-primary">
+    <div className="min-h-screen bg-bg-primary page-enter">
       <Navbar edition={edition} />
+      <TickerBar items={news} newsletterId={newsletter.id} />
       <main className="max-w-6xl mx-auto px-4 py-8 space-y-10">
         <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border-dark pb-5">
           <div>
@@ -74,19 +95,28 @@ export default function EditionView() {
         </div>
 
         <section>
-          <h3 className="text-xs font-bold text-text-muted uppercase tracking-widest mb-4 flex items-center gap-2">
-            <span className="w-1 h-4 bg-accent-purple rounded-full inline-block" />
+          <h3 className="font-grotesk font-bold text-2xl text-text-primary flex items-center gap-3.5 mb-6">
+            <span className="w-1.5 h-7 rounded-sm bg-accent-purple inline-block" style={{ boxShadow: "0 0 12px #7c3aed" }} />
             Noticias
+            <span className="font-mono-jet text-[11px] text-text-muted font-normal">
+              / {news.length.toString().padStart(2, "0")} stories
+            </span>
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {news.map((item, i) => (
-              <NewsCard
-                key={i}
-                {...item}
-                newsletterId={newsletter.id}
-                newsIndex={i}
-              />
-            ))}
+          <div className="grid grid-cols-1 md:grid-cols-6 gap-5">
+            {news.map((item, i) => {
+              const lastAlone = news.length % 2 !== 0 && i === news.length - 1;
+              return (
+                <NewsCard
+                  key={i}
+                  {...item}
+                  newsletterId={newsletter.id}
+                  newsIndex={i}
+                  index={i}
+                  featured={i === 0}
+                  lastAlone={lastAlone}
+                />
+              );
+            })}
           </div>
         </section>
 
@@ -117,6 +147,9 @@ export default function EditionView() {
           </section>
         )}
       </main>
+
+      <Footer />
+      <BackToTop />
     </div>
   );
 }

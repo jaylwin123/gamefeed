@@ -6,6 +6,7 @@ import History from "./pages/History";
 import EditionView from "./pages/EditionView";
 import NewsArticle from "./pages/NewsArticle";
 import GamePage from "./pages/GamePage";
+import NotFound from "./pages/NotFound";
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
       <Route path="/edition/:id" element={<EditionView />} />
       <Route path="/news/:newsletterId/:newsIndex" element={<NewsArticle />} />
       <Route path="/game/:slug" element={<GamePage />} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }

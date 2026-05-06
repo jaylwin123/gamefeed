@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+﻿﻿import { useNavigate } from "react-router-dom";
 
 const CATEGORY_COLORS = {
   LANZAMIENTO: { bg: "#7c3aed", text: "white", label: "pp" },
@@ -41,10 +41,21 @@ export default function NewsCard({
   const readTime = estimateReadTime((body || "") + " " + (description || ""));
   const colSpan = featured || lastAlone ? "md:col-span-6" : "md:col-span-3";
 
+  function handleKey(e) {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      navigate(`/news/${newsletterId}/${newsIndex}`);
+    }
+  }
+
   return (
     <article
       onClick={() => navigate(`/news/${newsletterId}/${newsIndex}`)}
-      className={`relative flex flex-col cursor-pointer rounded-[14px] overflow-hidden border border-white/[0.12] opacity-0 animate-fade-up transition-all duration-[220ms] ease-[cubic-bezier(.2,.8,.2,1)] ${colSpan}`}
+      onKeyDown={handleKey}
+      tabIndex={0}
+      role="button"
+      aria-label={`Leer: ${title}`}
+      className={`relative flex flex-col cursor-pointer rounded-[14px] overflow-hidden border border-white/[0.12] opacity-0 animate-fade-up transition-all duration-[220ms] ease-[cubic-bezier(.2,.8,.2,1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-purple focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary ${colSpan}`}
       style={{
         animationDelay: `${index * 0.08}s`,
         background: "linear-gradient(180deg, rgba(26,26,46,0.85), rgba(21,21,42,0.75))",
@@ -73,6 +84,7 @@ export default function NewsCard({
           <img
             src={image}
             alt={title}
+            loading="lazy"
             className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
             onError={e => { e.currentTarget.parentElement.style.display = "none"; }}
           />
@@ -109,9 +121,9 @@ export default function NewsCard({
       <div className={`relative z-[2] flex flex-col flex-1 gap-3 ${featured ? "p-7 md:p-8" : "p-5"}`}>
         <div className="font-mono-jet text-[11px] text-text-muted flex items-center gap-2 flex-wrap">
           <span>{source || "GAMEFEED"}</span>
-          <span className="text-text-muted/40">�</span>
+          <span className="text-text-muted/40">/</span>
           <span>{platform}</span>
-          <span className="text-text-muted/40">�</span>
+          <span className="text-text-muted/40">/</span>
           <span>{readTime} min</span>
         </div>
         <h3 className={`font-grotesk font-bold text-text-primary leading-tight ${featured ? "text-4xl max-w-[80%]" : "text-base"}`}>
@@ -127,7 +139,7 @@ export default function NewsCard({
         </p>
         <div className="flex items-center justify-between mt-auto pt-1">
           <span className="font-mono-jet text-xs text-accent-purple group-hover:text-accent-cyan transition-colors">
-            Leer ahora ?
+            Leer ahora →
           </span>
         </div>
       </div>

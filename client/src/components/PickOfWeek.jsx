@@ -126,6 +126,7 @@ export default function PickOfWeek({ pick }) {
             <img
               src={image}
               alt={title}
+              loading="lazy"
               className="w-24 h-24 rounded-xl object-cover border border-accent-yellow/20"
             />
           ) : (
@@ -191,15 +192,47 @@ export default function PickOfWeek({ pick }) {
                 className="rounded-lg p-3 border border-white/[0.06]"
                 style={{ background: "rgba(0,0,0,0.25)" }}
               >
-                <div className="font-mono-jet text-[10px] text-text-muted uppercase tracking-widest mb-1">
-                  {label}
-                </div>
-                <div className="font-grotesk font-semibold text-sm text-text-primary">
-                  {val}
-                </div>
+                <div className="font-mono-jet text-[10px] text-text-muted uppercase tracking-widest mb-1">{label}</div>
+                <div className="font-grotesk font-semibold text-sm text-text-primary">{val}</div>
               </div>
             ))}
           </div>
+
+          {/* Pros / Cons */}
+          {(prosList.length > 0 || consList.length > 0) && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-white/[0.06]">
+              {prosList.length > 0 && (
+                <div>
+                  <p className="font-mono-jet text-[10px] uppercase tracking-widest mb-2" style={{ color: "var(--success)" }}>
+                    + PROS
+                  </p>
+                  <ul className="flex flex-col gap-1.5">
+                    {prosList.map((p, i) => (
+                      <li key={i} className="flex items-start gap-2 font-mono-jet text-[11px] text-text-secondary">
+                        <span className="flex-shrink-0 mt-0.5" style={{ color: "var(--success)" }}>&#10003;</span>
+                        {p}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {consList.length > 0 && (
+                <div>
+                  <p className="font-mono-jet text-[10px] uppercase tracking-widest mb-2" style={{ color: "var(--danger)" }}>
+                    &#8722; CONTRAS
+                  </p>
+                  <ul className="flex flex-col gap-1.5">
+                    {consList.map((c, i) => (
+                      <li key={i} className="flex items-start gap-2 font-mono-jet text-[11px] text-text-secondary">
+                        <span className="flex-shrink-0 mt-0.5" style={{ color: "var(--danger)" }}>&#10007;</span>
+                        {c}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Action buttons */}
           <div className="flex flex-wrap gap-3 mt-auto">
@@ -207,36 +240,21 @@ export default function PickOfWeek({ pick }) {
               <button
                 onClick={() => navigate(`/games/${slug}`)}
                 className="font-mono-jet text-[11px] uppercase tracking-widest px-5 py-2.5 rounded-lg font-semibold transition-all duration-200"
-                style={{
-                  background: "linear-gradient(135deg, #f59e0b, #ec4899)",
-                  color: "#0d0d0f",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "translateY(-2px)";
-                  e.currentTarget.style.boxShadow =
-                    "0 8px 24px rgba(245,158,11,0.35)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "";
-                  e.currentTarget.style.boxShadow = "";
-                }}
+                style={{ background: "linear-gradient(135deg, #f59e0b, #ec4899)", color: "#0d0d0f" }}
+                onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(245,158,11,0.35)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = ""; }}
               >
-                Leer review completa →
+                Leer review completa &#8594;
               </button>
             )}
             <button
+              onClick={() => window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(title + " official trailer")}`, "_blank", "noopener,noreferrer")}
               className="font-mono-jet text-[11px] uppercase tracking-widest px-5 py-2.5 rounded-lg border border-white/20 text-text-muted transition-all duration-200"
               style={{ background: "rgba(255,255,255,0.04)" }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = "rgba(245,158,11,0.4)";
-                e.currentTarget.style.color = "#f59e0b";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = "";
-                e.currentTarget.style.color = "";
-              }}
+              onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(245,158,11,0.4)"; e.currentTarget.style.color = "#f59e0b"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.borderColor = ""; e.currentTarget.style.color = ""; }}
             >
-              Ver trailer
+              &#9654; Ver trailer
             </button>
           </div>
         </div>
