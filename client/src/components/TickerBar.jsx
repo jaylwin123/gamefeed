@@ -13,6 +13,8 @@ export default function TickerBar({ items, newsletterId }) {
   if (!items || items.length === 0) return null;
 
   const doubled = [...items, ...items];
+  // ~15s per item keeps reading speed consistent regardless of count
+  const duration = Math.max(20, items.length * 15);
 
   return (
     <div
@@ -49,7 +51,8 @@ export default function TickerBar({ items, newsletterId }) {
           }}
         >
           <div
-            className="inline-flex gap-12 whitespace-nowrap ticker-scroll-anim pl-6 group-hover:[animation-play-state:paused]"
+            className="inline-flex gap-12 whitespace-nowrap pl-6 group-hover:[animation-play-state:paused]"
+            style={{ animation: `ticker-scroll ${duration}s linear infinite` }}
           >
             {doubled.map((item, i) => {
               const newsIndex = i % items.length;
