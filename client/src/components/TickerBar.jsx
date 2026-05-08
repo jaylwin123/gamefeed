@@ -5,6 +5,8 @@ const CATEGORY_COLOR = {
   EXPANSION:     "#06b6d4",
   INDUSTRIA:     "#f59e0b",
   ACTUALIZACION: "#34d399",
+  ANUNCIO:       "#f97316",
+  PREVIO:        "#818cf8",
   DEFAULT:       "#ec4899",
 };
 

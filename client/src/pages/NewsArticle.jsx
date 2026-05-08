@@ -9,9 +9,13 @@ import { useAuth } from "../context/AuthContext";
 // ── helpers ─────────────────────────────────────────────────────────────────
 const CATEGORY_COLORS = {
   LANZAMIENTO:   { bg: "rgba(124,58,237,0.15)",  text: "#c4b5fd", border: "rgba(124,58,237,0.4)" },
+  EXPANSION:     { bg: "rgba(6,182,212,0.15)",   text: "#67e8f9", border: "rgba(6,182,212,0.4)" },
   EXPANSIÓN:     { bg: "rgba(6,182,212,0.15)",   text: "#67e8f9", border: "rgba(6,182,212,0.4)" },
   INDUSTRIA:     { bg: "rgba(245,158,11,0.15)",  text: "#fcd34d", border: "rgba(245,158,11,0.4)" },
+  ACTUALIZACION: { bg: "rgba(52,211,153,0.15)",  text: "#6ee7b7", border: "rgba(52,211,153,0.4)" },
   ACTUALIZACIÓN: { bg: "rgba(52,211,153,0.15)",  text: "#6ee7b7", border: "rgba(52,211,153,0.4)" },
+  ANUNCIO:       { bg: "rgba(249,115,22,0.15)",  text: "#fed7aa", border: "rgba(249,115,22,0.4)" },
+  PREVIO:        { bg: "rgba(129,140,248,0.15)", text: "#c7d2fe", border: "rgba(129,140,248,0.4)" },
   DEFAULT:       { bg: "rgba(236,72,153,0.15)",  text: "#f9a8d4", border: "rgba(236,72,153,0.4)" },
 };
 

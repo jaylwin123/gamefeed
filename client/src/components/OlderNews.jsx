@@ -5,11 +5,13 @@ import api from "../api/axios";
 const LIMIT = 8;
 
 const CATEGORY_COLORS = {
-  LANZAMIENTO: "#7c3aed",
-  EXPANSION: "#06b6d4",
-  INDUSTRIA: "#f59e0b",
+  LANZAMIENTO:   "#7c3aed",
+  EXPANSION:     "#06b6d4",
+  INDUSTRIA:     "#f59e0b",
   ACTUALIZACION: "#34d399",
-  DEFAULT: "#ec4899",
+  ANUNCIO:       "#f97316",
+  PREVIO:        "#818cf8",
+  DEFAULT:       "#ec4899",
 };
 
 function OlderCard({ item, index }) {

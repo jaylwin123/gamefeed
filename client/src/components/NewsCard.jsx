@@ -1,19 +1,23 @@
 ﻿﻿import { useNavigate } from "react-router-dom";
 
 const CATEGORY_COLORS = {
-  LANZAMIENTO: { bg: "#7c3aed", text: "white", label: "pp" },
-  EXPANSION:   { bg: "#06b6d4", text: "black", label: "cy" },
-  INDUSTRIA:   { bg: "#f59e0b", text: "black", label: "yl" },
-  ACTUALIZACION:{ bg: "#34d399", text: "black", label: "gn" },
-  DEFAULT:     { bg: "#ec4899", text: "white", label: "pk" },
+  LANZAMIENTO:   { bg: "#7c3aed", text: "white", label: "pp" },
+  EXPANSION:     { bg: "#06b6d4", text: "black", label: "cy" },
+  INDUSTRIA:     { bg: "#f59e0b", text: "black", label: "yl" },
+  ACTUALIZACION: { bg: "#34d399", text: "black", label: "gn" },
+  ANUNCIO:       { bg: "#f97316", text: "white", label: "or" },
+  PREVIO:        { bg: "#818cf8", text: "white", label: "vi" },
+  DEFAULT:       { bg: "#ec4899", text: "white", label: "pk" },
 };
 
 const BADGE_BORDER = {
-  LANZAMIENTO: "rgba(124,58,237,0.3)",
-  EXPANSION:   "rgba(6,182,212,0.3)",
-  INDUSTRIA:   "rgba(245,158,11,0.3)",
-  ACTUALIZACION:"rgba(52,211,153,0.3)",
-  DEFAULT:     "rgba(236,72,153,0.3)",
+  LANZAMIENTO:   "rgba(124,58,237,0.3)",
+  EXPANSION:     "rgba(6,182,212,0.3)",
+  INDUSTRIA:     "rgba(245,158,11,0.3)",
+  ACTUALIZACION: "rgba(52,211,153,0.3)",
+  ANUNCIO:       "rgba(249,115,22,0.3)",
+  PREVIO:        "rgba(129,140,248,0.3)",
+  DEFAULT:       "rgba(236,72,153,0.3)",
 };
 
 function estimateReadTime(text) {
